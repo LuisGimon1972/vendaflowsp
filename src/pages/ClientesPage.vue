@@ -4,7 +4,7 @@
       <div class="text-h5">Clientes</div>
 
       <q-btn
-        label="Novo Cliente"
+        label="Nuevo Cliente"
         color="primary"
         style="border-radius: 12px"
         @click="abrirDialog"
@@ -16,7 +16,7 @@
         <q-input
           class="border"
           v-model="filtroBusca"
-          label="Buscar cliente por nome"
+          label="Buscar cliente por nombre"
           outlined
           clearable
           dense
@@ -45,7 +45,7 @@
       flat
       bordered
       class="border grade-azul"
-      no-data-label="Nenhum cliente encontrado"
+      no-data-label="Ningún cliente encontrado"
       :pagination="{ rowsPerPage: 10 }"
     >
       <template v-slot:body-cell-acoes="props">
@@ -84,7 +84,7 @@
       <q-card style="min-width: 400px" class="border">
         <q-card-section>
           <div class="text-h6">
-            {{ editando ? 'Editar Cliente' : 'Novo Cliente' }}
+            {{ editando ? 'Editar Cliente' : 'Nuevo Cliente' }}
           </div>
         </q-card-section>
 
@@ -96,7 +96,7 @@
               </div>
 
               <div class="col-12">
-                <q-input dense v-model="form.nome" label="Nome Completo" />
+                <q-input dense v-model="form.nome" label="Nombre Completo" />
               </div>
 
               <div class="col-12 col-md-6">
@@ -104,21 +104,21 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <q-input dense v-model="form.telefone" label="Telefone" mask="(##)#####-####" />
+                <q-input dense v-model="form.telefone" label="Telefono" mask="(##)#####-####" />
               </div>
 
               <div class="col-12 col-md-6">
                 <q-input
                   dense
                   v-model="form.cep"
-                  label="CEP"
+                  label="Codigo Postal"
                   mask="#####-###"
                   :loading="buscandoCep"
                 />
               </div>
 
               <div class="col-12 col-md-6">
-                <q-input dense v-model="form.endereco" label="Endereço" />
+                <q-input dense v-model="form.endereco" label="Dirección" />
               </div>
 
               <div class="col-12 col-md-6">
@@ -126,11 +126,11 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <q-input dense v-model="form.bairro" label="Bairro" />
+                <q-input dense v-model="form.bairro" label="Barrio" />
               </div>
 
               <div class="col-12 col-md-6">
-                <q-input dense v-model="form.cidade" label="Cidade" />
+                <q-input dense v-model="form.cidade" label="Ciudad" />
               </div>
             </div>
           </q-card-section>
@@ -200,11 +200,11 @@ const statusOptions: StatusCliente[] = ['ATIVO', 'INATIVO'];
 
 const columns: QTableProps['columns'] = [
   { name: 'documento', label: 'Documento', field: 'documento', align: 'left' },
-  { name: 'nome', label: 'Nome', field: 'nome', align: 'left' },
+  { name: 'nome', label: 'Nombre', field: 'nome', align: 'left' },
   { name: 'email', label: 'Email', field: 'email', align: 'left' },
-  { name: 'telefone', label: 'Telefone', field: 'telefone', align: 'left' },
-  { name: 'cidade', label: 'Cidade', field: 'cidade', align: 'left' },
-  { name: 'acoes', label: 'Ações', field: 'acoes', align: 'left' },
+  { name: 'telefone', label: 'Telefono', field: 'telefone', align: 'left' },
+  { name: 'cidade', label: 'Ciudad', field: 'cidade', align: 'left' },
+  { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'left' },
 ];
 
 // carregar lista
@@ -242,7 +242,7 @@ async function excluirCliente(id?: number): Promise<void> {
 
   Dialog.create({
     title: 'Confirmação',
-    message: 'Deseja excluir este cliente?',
+    message: 'Desea excluir este cliente?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -251,7 +251,7 @@ async function excluirCliente(id?: number): Promise<void> {
 
       Notify.create({
         type: 'positive',
-        message: 'Cliente excluído com sucesso',
+        message: 'Cliente excluído con éxito!',
       });
 
       await carregarClientes();

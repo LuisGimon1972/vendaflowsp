@@ -4,7 +4,7 @@
       <div class="text-h5">Produtos</div>
 
       <q-btn
-        label="NOVO PRODUTO"
+        label="NUEVO PRODUCTO"
         color="primary"
         unelevated
         style="border-radius: 12px"
@@ -16,7 +16,7 @@
         <q-input
           class="border"
           v-model="filtroBusca"
-          label="Buscar produto por nome"
+          label="Buscar producto por nombre"
           outlined
           clearable
           dense
@@ -29,7 +29,7 @@
           class="border"
           v-model="filtroCategoria"
           :options="categoriasOptions"
-          label="Categoria"
+          label="Categoría"
           outlined
           clearable
           dense
@@ -58,7 +58,7 @@
       flat
       bordered
       class="border grade-azul"
-      no-data-label="Nenhum produto encontrado"
+      no-data-label="Ningún producto encontrado"
      :pagination="{ rowsPerPage: 10 }"
     >
       <template v-slot:body-cell-foto="props">
@@ -106,7 +106,7 @@
       <q-card style="min-width: 500px; max-width: 500px; width: 100%" class="border">
         <q-card-section>
           <div class="text-h6">
-            {{ editando ? 'Editar Produto' : 'Novo Produto' }}
+            {{ editando ? 'Editar Producto' : 'Nuevo Producto' }}
           </div>
         </q-card-section>
 
@@ -120,11 +120,18 @@
               dense
               outlined
             />
-            <q-input v-model="form.nome" label="Nome" dense outlined />
-            <q-input v-model="form.categoria" label="Categoria" dense outlined />
+            <q-input v-model="form.nome" label="Nombre" dense outlined />
+            <q-select
+              v-model="form.categoria"
+              :options="categoriasOptions"
+              label="Categoría"
+              dense
+              outlined
+              clearable
+            />
             <q-input
               v-model.number="form.preco"
-              label="Preço"
+              label="Precio"
               dense
               type="number"
               outlined
@@ -132,7 +139,7 @@
             />
             <q-input
               v-model.number="form.estoque"
-              label="Estoque atual"
+              label="Estoque actual"
               type="number"
               dense
               outlined
@@ -142,7 +149,7 @@
             <q-input
               v-if="editando"
               v-model.number="novaQuantidade"
-              label="Nova quantidade"
+              label="Nueva cantidad"
               type="number"
               outlined
               dense
@@ -151,12 +158,12 @@
           </q-card>
 
           <q-card flat bordered class="q-pa-md border" style="margin-top: -10px">
-            <div class="text-subtitle1 q-mb-md" dense>Foto do produto</div>
+            <div class="text-subtitle1 q-mb-md" dense>Imagen del producto</div>
 
             <q-file
               v-model="fotoArquivo"
               class="text-normal q-mb-sm"
-              label="Selecionar imagem (formatos: .JPG, .JPEG, .PNG ou .WEBP)"
+              label="Selecionar imagen (formatos: .JPG, .JPEG, .PNG ou .WEBP)"
               outlined
               dense
               clearable
@@ -292,28 +299,38 @@ const filtroBusca = ref<string>('');
 const filtroCategoria = ref<string>('');
 
 const categoriasOptions = ref<string[]>([
-  'Eletrônicos',
-  'Roupas',
+  'Electrónicos',
+  'Ropa',
   'Alimentos',
   'Bebidas',
   'Limpieza',
+  'Higiene',
+  'Calzado',
+  'Accesorios',
+  'Casa y Cocina',
+  'Papelería',
+  'Herramientas',
+  'Juguetes',
+  'Pet Shop',
+  'Farmacia',
+  'Otros',
 ]);
 
 const columns: QTableProps['columns'] = [
-  { name: 'id', label: 'Código', field: 'id', align: 'left' },
-  { name: 'foto', label: 'Foto', field: 'foto', align: 'left' },
-  { name: 'nome', label: 'Nome', field: 'nome', align: 'left' },
+  { name: 'id', label: 'ID', field: 'id', align: 'left' },
+  { name: 'foto', label: 'Imagen', field: 'foto', align: 'left' },
+  { name: 'nome', label: 'Nombre', field: 'nome', align: 'left' },
   { name: 'codigo_barras', label: 'Barras', field: 'codigo_barras', align: 'left' },
-  { name: 'categoria', label: 'Categoria', field: 'categoria', align: 'left' },
+  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
   {
     name: 'preco',
-    label: 'Preço Venda',
+    label: 'Precio Venta',
     field: 'preco',
     align: 'right',
     format: (val: number | string) => `R$ ${Number(val).toFixed(2)}`,
   },
   { name: 'estoque', label: 'Estoque', field: 'estoque', align: 'right' },
-  { name: 'acoes', label: 'Ações', field: 'acoes', align: 'left' },
+  { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'left' },
 ];
 
 watch(fotoArquivo, (file) => {
