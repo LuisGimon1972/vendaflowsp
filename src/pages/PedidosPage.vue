@@ -81,7 +81,7 @@
                   outlined
                   use-input
                   input-debounce="300"
-                  label="Buscar produto"
+                  label="Buscar produto, ID ou código de barras"
                   @filter="filtrarProdutos"
                   dense
                 />
@@ -424,6 +424,7 @@ interface Produto {
   preco: number | string;
   estoque: number | string;
   status?: string;
+  codigo_barras?: string;
 }
 
 interface ItemPedido {
@@ -1116,12 +1117,18 @@ function filtrarClientes(val: string, update: (fn: () => void) => void) {
 
 function filtrarProdutos(val: string, update: (fn: () => void) => void) {
   update(() => {
-    const termo = val.toLowerCase();
+    const termo = val.toLowerCase().trim();
 
     produtosOptions.value = produtos.value
-      .filter((produto) => produto.nome.toLowerCase().includes(termo))
+      .filter((produto) => {
+        const buscaPorNome = produto.nome.toLowerCase().includes(termo);
+        const buscaPorId = String(produto.id).includes(termo);
+        const buscaPorCodigoBarras = String(produto.codigo_barras || '').includes(termo);
+
+        return buscaPorNome || buscaPorId || buscaPorCodigoBarras;
+      })
       .map((produto) => ({
-        label: `${produto.nome} (${Number(produto.estoque || 0)} em estoque)`,
+        label: `${produto.id} - ${produto.nome} (${Number(produto.estoque || 0)} em estoque)`,
         value: produto.id,
       }));
   });

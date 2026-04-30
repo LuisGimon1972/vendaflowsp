@@ -43,7 +43,7 @@
               v-model="busca"
               outlined
               dense
-              label="Buscar produto ou código de barras"
+              label="Buscar produto, ID ou código de barras"
               @keyup.enter="buscarOuAdicionarProduto"
             >
               <template #prepend>
@@ -397,6 +397,7 @@ interface Produto {
   estoque: number;
   status?: string;
   foto: string;
+  codigo_barras?: string;
 }
 
 interface OptionItem {
@@ -550,8 +551,16 @@ const produtosFiltrados = computed(() => {
 
   return produtos.value.filter((produto) => {
     const ativo = produto.status !== 'INATIVO';
-    const combinaBusca = produto.nome.toLowerCase().includes(termo);
-    return ativo && combinaBusca;
+
+    if (!termo) {
+      return ativo;
+    }
+
+    const buscaPorNome = produto.nome.toLowerCase().includes(termo);
+    const buscaPorId = String(produto.id).includes(termo);
+    const buscaPorCodigoBarras = String(produto.codigo_barras || '').includes(termo);
+
+    return ativo && (buscaPorNome || buscaPorId || buscaPorCodigoBarras);
   });
 });
 
