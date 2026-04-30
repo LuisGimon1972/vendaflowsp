@@ -6,7 +6,7 @@
           <q-card-section>
             <div class="text-h6">{{ tituloPagina }}</div>
             <div class="text-caption text-grey-7">
-              Monte o pedido de forma rápida e acompanhe o total em tempo real
+              Monte el pedido de forma rápida e acompañe el total en tiempo real
             </div>
           </q-card-section>
         </q-card>
@@ -15,7 +15,7 @@
           <q-card-section>
             <div class="row q-col-gutter-md items-center">
               <div class="col-12 col-md-6">
-                <div class="text-subtitle1 text-weight-medium q-mb-sm">Status do Pedido</div>
+                <div class="text-subtitle1 text-weight-medium q-mb-sm">Status del Pedido</div>
 
                 <q-select
                   v-model="statusPedido"
@@ -30,7 +30,7 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <div class="text-caption text-grey-7 q-mb-sm">Situação atual</div>
+                <div class="text-caption text-grey-7 q-mb-sm">Situación actual</div>
 
                 <q-badge
                   :color="getStatusColor(statusPedido)"
@@ -67,7 +67,7 @@
 
         <q-card flat bordered class="q-mb-md border separa">
           <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">Adicionar Produto</div>
+            <div class="text-subtitle1 text-weight-medium q-mb-md">Adicionar Producto</div>
 
             <div class="row q-col-gutter-md">
               <div class="col-12 col-md-6">
@@ -81,7 +81,7 @@
                   outlined
                   use-input
                   input-debounce="300"
-                  label="Buscar produto, ID ou código de barras"
+                  label="Buscar producto, ID o código de barras"
                   @filter="filtrarProdutos"
                   dense
                 />
@@ -93,7 +93,7 @@
                   type="number"
                   min="1"
                   outlined
-                  label="Quantidade"
+                  label="Cantidad"
                   dense
                 />
               </div>
@@ -111,8 +111,8 @@
             </div>
 
             <div v-if="produtoAtual" class="q-mt-md q-pa-sm rounded-borders bg-blue-1 text-grey-9">
-              <div><strong>Produto:</strong> {{ produtoAtual.nome }}</div>
-              <div><strong>Preço:</strong> {{ formatarMoeda(produtoAtual.preco) }}</div>
+              <div><strong>Producto:</strong> {{ produtoAtual.nome }}</div>
+              <div><strong>Precio:</strong> {{ formatarMoeda(produtoAtual.preco) }}</div>
               <div><strong>Estoque:</strong> {{ produtoAtual.estoque }}</div>
             </div>
           </q-card-section>
@@ -120,7 +120,7 @@
 
         <q-card flat bordered class="border separa">
           <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">Itens do Pedido</div>
+            <div class="text-subtitle1 text-weight-medium q-mb-md">Items del Pedido</div>
 
             <q-table
               class="grade-azul border"
@@ -129,7 +129,7 @@
               :rows="itens"
               :columns="columns"
               row-key="produto_id"
-              no-data-label="Nenhum item adicionado"
+              no-data-label="Ningún ítem adicionado"
             >
               <template #body-cell-preco="props">
                 <q-td :props="props">
@@ -163,24 +163,24 @@
       <div class="col-12 col-md-4">
         <q-card flat bordered class="sticky-card border">
           <q-card-section>
-            <div class="text-h6 q-mb-md">Resumo da Venda</div>
+            <div class="text-h6 q-mb-md">Resumen de la Venta</div>
 
             <div class="q-mb-sm">
               <div class="text-caption text-grey-7">Cliente</div>
               <div class="text-subtitle2">
-                {{ nomeClienteSelecionado || 'Não selecionado' }}
+                {{ nomeClienteSelecionado || 'No seleccionado' }}
               </div>
             </div>
 
             <q-separator class="q-my-md" />
 
             <div class="row justify-between q-mb-sm">
-              <span class="text-grey-7">Itens</span>
+              <span class="text-grey-7">Items</span>
               <strong>{{ totalItens }}</strong>
             </div>
 
             <div class="row justify-between q-mb-sm">
-              <span class="text-grey-7">Produtos diferentes</span>
+              <span class="text-grey-7">Productos diferentes</span>
               <strong>{{ itens.length }}</strong>
             </div>
 
@@ -192,7 +192,7 @@
                   min="0"
                   :max="descontoTipo === 'percentual' ? 99 : undefined"
                   outlined
-                  label="Desc."
+                  label="Desconto"
                   dense
                 >
                   <template #prepend>
@@ -222,7 +222,7 @@
                   min="0"
                   :max="acrescimoTipo === 'percentual' ? 99 : undefined"
                   outlined
-                  label="Acréscimo"
+                  label="Recargo"
                   dense
                 >
                   <template #prepend>
@@ -494,7 +494,7 @@ interface DadosComprovantePedido {
 
 const pedidoId = computed(() => (route.params.id ? Number(route.params.id) : null));
 
-const tituloPagina = computed(() => (pedidoId.value ? 'Editar Pedido' : 'Novo Pedido'));
+const tituloPagina = computed(() => (pedidoId.value ? 'Editar Pedido' : 'Nuevo Pedido'));
 
 const statusOptions = [
   { label: 'ABERTO', value: 'ABERTO' },

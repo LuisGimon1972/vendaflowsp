@@ -120,7 +120,7 @@
               dense
               outlined
             />
-            <q-input v-model="form.nome" label="Nombre" dense outlined />
+            <q-input v-model="form.nome" label="Producto" dense outlined />
             <q-select
               v-model="form.categoria"
               :options="categoriasOptions"
@@ -319,8 +319,8 @@ const categoriasOptions = ref<string[]>([
 const columns: QTableProps['columns'] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left' },
   { name: 'foto', label: 'Imagen', field: 'foto', align: 'left' },
-  { name: 'nome', label: 'Nombre', field: 'nome', align: 'left' },
-  { name: 'codigo_barras', label: 'Barras', field: 'codigo_barras', align: 'left' },
+  { name: 'nome', label: 'Producto', field: 'nome', align: 'left' },
+  { name: 'codigo_barras', label: 'Código de Barras', field: 'codigo_barras', align: 'left' },
   { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
   {
     name: 'preco',
