@@ -41,14 +41,14 @@ async function carregarBanco() {
     const sql = fs.readFileSync(sqlPath, 'utf8');
 
     if (!sql.trim()) {
-      console.warn('banco.sql está vazio, pulando execução...');
+      console.warn('Banco VendaFlow.sql está vazio, pulando execução...');
       return;
     }
 
     await pool.query(sql);
-    console.log('banco.sql executado com sucesso!');
+    console.log('Banco VendaFlow.sql executado com sucesso!');
   } catch (err) {
-    console.error('Erro ao executar banco.sql:', err.message);
+    console.error('Erro ao executar Banco VendaFlow.sql:', err.message);
   }
 }
 
