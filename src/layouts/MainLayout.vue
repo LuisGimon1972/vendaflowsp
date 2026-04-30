@@ -10,7 +10,7 @@
             alt="Logo"
             style="width: 60px; height: 36px; object-fit: contain; margin-right: 10px"
           />
-          <span>VendaFlow Gestão Comercial</span>
+          <span>VendaFlow Gestión Comercial</span>
         </q-toolbar-title>
 
         <div class="row items-center q-gutter-sm">
@@ -36,7 +36,7 @@
     >
       <q-list padding>
 	<q-item-label header class="text-white text-center text-weight-bold text-h6 q-py-md">
-	  Menu do Sistema
+	  Menu del Sistema
 	</q-item-label>
 
        <q-item clickable to="/" exact active-class="menu-active">
@@ -50,7 +50,7 @@
           <q-item-section avatar>
             <q-icon name="payments" />
           </q-item-section>
-          <q-item-section style="font-size: 16px;">Financeiro</q-item-section>
+          <q-item-section style="font-size: 16px;">Financiero</q-item-section>
         </q-item>
 
         <q-item clickable to="/clientes" active-class="menu-active">
@@ -64,28 +64,28 @@
           <q-item-section avatar>
             <q-icon name="inventory_2" />
           </q-item-section>
-          <q-item-section style="font-size: 16px;">Produtos</q-item-section>
+          <q-item-section style="font-size: 16px;">Productos</q-item-section>
         </q-item>
 
         <q-item clickable to="/pedidos" active-class="menu-active">
           <q-item-section avatar>
             <q-icon name="add_shopping_cart" />
           </q-item-section>
-          <q-item-section style="font-size: 16px;">Criar Pedido</q-item-section>
+          <q-item-section style="font-size: 16px;">Crear Pedido</q-item-section>
         </q-item>
 
         <q-item clickable to="/pedidos/lista" active-class="menu-active">
           <q-item-section avatar>
             <q-icon name="receipt_long" />
           </q-item-section>
-          <q-item-section style="font-size: 16px;">Pedidos e Vendas</q-item-section>
+          <q-item-section style="font-size: 16px;">Pedidos y Ventas</q-item-section>
         </q-item>
 
         <q-item clickable to="/pdv" active-class="menu-active">
           <q-item-section avatar>
             <q-icon name="point_of_sale" />
           </q-item-section>
-          <q-item-section style="font-size: 16px;">PDV</q-item-section>
+          <q-item-section style="font-size: 16px;">TPV</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>

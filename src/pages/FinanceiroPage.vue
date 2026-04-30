@@ -3,7 +3,7 @@
     <div class="row items-center justify-between q-mb-md">
       <div>
         <div class="text-h5">Financeiro</div>
-        <div class="text-caption text-grey-7">Controle de entradas por período e origem</div>
+        <div class="text-caption text-grey-7">Control de entradas por período y origen</div>
       </div>
     </div>
 
@@ -12,7 +12,7 @@
       <div class="col-12 col-md-4">
         <q-card flat bordered class="bg-green-1 border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Entradas Hoje</div>
+            <div class="text-subtitle2 text-grey-8">Entradas Hoy</div>
             <div class="text-h5 text-green-8">
               {{ formatarMoeda(resumoHoje.total) }}
             </div>
@@ -23,7 +23,7 @@
       <div class="col-12 col-md-4">
         <q-card flat bordered class="bg-blue-1 border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Pedidos Hoje</div>
+            <div class="text-subtitle2 text-grey-8">Pedidos Hoy</div>
             <div class="text-h5 text-primary">
               {{ formatarMoeda(resumoHoje.total_pedidos) }}
             </div>
@@ -34,7 +34,7 @@
       <div class="col-12 col-md-4">
         <q-card flat bordered class="bg-orange-1 border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">PDV Hoje</div>
+            <div class="text-subtitle2 text-grey-8">TPV Hoy</div>
             <div class="text-h5 text-orange-9">
               {{ formatarMoeda(resumoHoje.total_pdv) }}
             </div>
@@ -48,11 +48,11 @@
       <q-card-section>
         <div class="row q-col-gutter-md items-end">
           <div class="col-12 col-md-2">
-            <q-input v-model="filtros.data_inicio" type="date" outlined dense label="Data início" />
+            <q-input v-model="filtros.data_inicio" type="date" outlined dense label="Fecha inicio" />
           </div>
 
           <div class="col-12 col-md-2">
-            <q-input v-model="filtros.data_fim" type="date" outlined dense label="Data fim" />
+            <q-input v-model="filtros.data_fim" type="date" outlined dense label="Fecha fin" />
           </div>
 
           <div class="col-12 col-md-2">
@@ -64,7 +64,7 @@
               outlined
               clearable
               dense
-              label="Origem"
+              label="Origen"
             />
           </div>
 
@@ -77,7 +77,7 @@
               outlined
               clearable
               dense
-              label="Forma de pagamento"
+              label="Forma de pago"
             />
           </div>
 
@@ -96,7 +96,7 @@
                 <q-btn
                   color="warning"
                   icon="filter_alt_off"
-                  label="Limpar Filtros"
+                  label="Limpiar Filtros"
                   class="full-width border"
                   @click="limparFiltros"
                 />
@@ -112,7 +112,7 @@
       <div class="col-12 col-md-4">
         <q-card flat bordered class="border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Total no Período</div>
+            <div class="text-subtitle2 text-grey-8">Total en el Período</div>
             <div class="text-h5 text-primary">
               {{ formatarMoeda(resumoPeriodo.total) }}
             </div>
@@ -134,7 +134,7 @@
       <div class="col-12 col-md-4">
         <q-card flat bordered class="border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Total do PDV</div>
+            <div class="text-subtitle2 text-grey-8">Total del TPV</div>
             <div class="text-h5">
               {{ formatarMoeda(resumoPeriodo.total_pdv) }}
             </div>
@@ -157,7 +157,7 @@
           :columns="columns"
           row-key="id"
           :loading="loading"
-          no-data-label="Nenhuma entrada encontrada"
+          no-data-label="Ninguna entrada encontrada"
           :pagination="{ rowsPerPage: 10 }"
         >
           <template #body-cell-data="props">
@@ -236,13 +236,13 @@ const filtros = ref({
   data_inicio: dataAtualInput(),
   data_fim: dataAtualInput(),
   origem: '' as '' | 'PEDIDO' | 'PDV',
-  forma_pagamento: '' as '' | 'DINHEIRO' | 'PIX' | 'CARTAO',
+  forma_pagamento: '' as '' | 'EFECTIVO' | 'PAGOMOVIL' | 'TARJETA',
 });
 
 const formaPagamentoOptions = [
-  { label: 'DINHEIRO', value: 'DINHEIRO' },
-  { label: 'PIX', value: 'PIX' },
-  { label: 'CARTAO', value: 'CARTAO' },
+  { label: 'EFECTIVO', value: 'EFECTIVO' },
+  { label: 'PAGOMOVIL', value: 'PAGOMOVIL' },
+  { label: 'TARJETA', value: 'TARJETA' },
 ];
 
 const origemOptions = [
@@ -252,10 +252,10 @@ const origemOptions = [
 
 const columns = [
   { name: 'id', label: 'ID', field: 'id', align: 'center' as const },
-  { name: 'data', label: 'Data', field: 'data', align: 'center' as const },
-  { name: 'origem', label: 'Origem', field: 'origem', align: 'left' as const },
-  { name: 'forma_pagamento', label: 'Pagamento', field: 'forma_pagamento', align: 'left' as const },
-  { name: 'descricao', label: 'Descrição', field: 'descricao', align: 'left' as const },
+  { name: 'data', label: 'Fecha', field: 'data', align: 'center' as const },
+  { name: 'origem', label: 'Origen', field: 'origem', align: 'left' as const },
+  { name: 'forma_pagamento', label: 'Pago', field: 'forma_pagamento', align: 'left' as const },
+  { name: 'descricao', label: 'Descripción', field: 'descricao', align: 'left' as const },
   { name: 'valor', label: 'Valor', field: 'valor', align: 'right' as const },
 ];
 

@@ -404,7 +404,7 @@ const router = useRouter();
 const API_URL = 'http://localhost:3000';
 
 type TipoAjuste = 'valor' | 'percentual';
-type FormaPagamento = 'DINHEIRO' | 'CARTAO' | 'PIX';
+type FormaPagamento = 'EFECTIVO' | 'TARJETA' | 'PAGOMOVIL';
 type FormaPagamentoResumo = FormaPagamento | 'COMBINADO';
 
 type StatusPedido = 'ABERTO' | 'FINALIZADO' | 'CANCELADO';
@@ -530,7 +530,7 @@ const imprimirComprovanteAutomaticamente = ref(true);
 
 const pagamentoRefs = ref<Array<InstanceType<typeof QInput> | null>>([]);
 
-const formaSelecionada = ref<FormaPagamento>('DINHEIRO');
+const formaSelecionada = ref<FormaPagamento>('EFECTIVO');
 const valorDigitado = ref<number>(0);
 
 function criarPagamentoRef(index: number) {
@@ -567,20 +567,20 @@ function getStatusColor(status: string) {
 
 function getLabelFormaPagamento(forma: FormaPagamento): string {
   switch (forma) {
-    case 'DINHEIRO':
-      return 'Dinheiro';
-    case 'CARTAO':
-      return 'Cartão';
-    case 'PIX':
-      return 'PIX';
+    case 'EFECTIVO':
+      return 'Efectivo';
+    case 'TARJETA':
+      return 'Tarjeta';
+    case 'PAGOMOVIL':
+      return 'PagoMovil';
   }
 }
 
 function criarPagamentosIniciais(): PagamentoLinha[] {
   return [
-    { forma: 'DINHEIRO', label: 'Dinheiro', valor: null },
-    { forma: 'CARTAO', label: 'Cartão', valor: null },
-    { forma: 'PIX', label: 'PIX', valor: null },
+    { forma: 'EFECTIVO', label: 'Efectivo', valor: null },
+    { forma: 'TARJETA', label: 'Tarjeta', valor: null },
+    { forma: 'PAGOMOVIL', label: 'PagoMovil', valor: null },
   ];
 }
 
@@ -672,7 +672,7 @@ function calcularAjusteCentavos(baseCentavos: number, tipo: TipoAjuste, valor: u
 }
 
 function isFormaSemTroco(forma?: string): boolean {
-  return ['PIX', 'CARTAO'].includes(normalizarTexto(forma));
+  return ['PAGOMOVIL', 'TARJETA'].includes(normalizarTexto(forma));
 }
 
 const subtotalPedidoCentavos = computed(() => {
@@ -716,7 +716,7 @@ const totalInformadoCentavos = computed(() => {
 
 const totalEmDinheiroCentavos = computed(() => {
   return pagamentos.value
-    .filter((item) => item.forma === 'DINHEIRO')
+    .filter((item) => item.forma === 'EFECTIVO')
     .reduce((acc, item) => acc + valorPositivoEmCentavos(item.valor), 0);
 });
 
@@ -1365,7 +1365,7 @@ async function salvarPedidoComPagamento() {
 
   const pagamentosFinanceiroCentavos = pagamentosPayloadCentavos
     .map((item) => {
-      if (item.forma === 'DINHEIRO') {
+      if (item.forma === 'EFECTIVO') {
         return {
           ...item,
           valorCentavos: Math.max(0, item.valorCentavos - trocoCalculadoCentavos),

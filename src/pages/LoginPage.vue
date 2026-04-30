@@ -2,14 +2,14 @@
   <div class="login-page flex flex-center">
     <q-card class="login-card shadow-6">
       <q-card-section class="text-center q-pb-xs">
-        <div class="text-h5 text-weight-bold text-primary">Bem-vindo</div>
+        <div class="text-h5 text-weight-bold text-primary">Bienvenido(a)</div>
         <img
           :src="logo"
           alt="Logo"
           style="width: 60px; height: 36px; object-fit: contain; margin-right: 10px"
         />
         <div style="margin-top: -10px" class="text-caption text-grey-7 q-mt-xs">
-          VendaFlow Gestão Comercial
+          VendaFlow Gestión Comercial
         </div>
       </q-card-section>
 
@@ -24,7 +24,7 @@
             rounded
             lazy-rules
             :rules="[
-              (val) => !!val || 'Informe o email',
+              (val) => !!val || 'Informe su email',
               (val) => /.+@.+\..+/.test(val) || 'Email inválido',
             ]"
           >
@@ -37,7 +37,7 @@
             style="margin-top: -10px"
             v-model="form.senha"
             :type="mostrarSenha ? 'text' : 'password'"
-            label="Senha"
+            label="Contraseña"
             outlined
             dense
             rounded
@@ -70,7 +70,7 @@
             :loading="loading"
           />
           <q-btn
-            label="Criar usuário"
+            label="Crear usuario"
             type="button"
             color="secondary"
             outline
@@ -81,7 +81,7 @@
           />
 
           <div class="text-center text-grey-7 text-caption q-mt-xs">
-            Use seu email e senha para acessar
+            Use su email y contraseña para acessar
           </div>
         </q-form>
       </q-card-section>
@@ -94,7 +94,7 @@
         <q-card-section>
           <div class="text-h6 text-primary">Criar novo usuário</div>
           <div class="text-caption text-grey-7">
-            Informe os dados do usuário e a senha do administrador.
+            Informe los datos del usuario y la contraseña del administrador.
           </div>
         </q-card-section>
 
@@ -102,7 +102,7 @@
           <q-form @submit.prevent="criarUsuario" class="q-gutter-sm">
             <q-input
               v-model="novoUsuario.nome"
-              label="Nome"
+              label="Nombre"
               outlined
               dense
               rounded
@@ -132,7 +132,7 @@
 
             <q-input
               v-model="novoUsuario.senha"
-              label="Senha do novo usuário"
+              label="Contraseña del nuevo usuario"
               type="password"
               outlined
               dense
@@ -146,7 +146,7 @@
 
             <q-input
               v-model="novoUsuario.confirmarSenha"
-              label="Confirmar senha"
+              label="Confirmar contraseña"
               type="password"
               outlined
               dense
@@ -163,7 +163,7 @@
 
             <q-input
               v-model="novoUsuario.senhaAdministrador"
-              label="Senha do administrador"
+              label="Contraseña del administrador"
               type="password"
               outlined
               dense
@@ -185,7 +185,7 @@
               />
 
               <q-btn
-                label="Criar"
+                label="Crear"
                 type="submit"
                 color="primary"
                 unelevated

@@ -289,7 +289,7 @@
                   >
                     <div class="col-4">
                       <div class="text-subtitle2">
-                        {{ pagamento.label }}
+                       {{ pagamento.label }}
                       </div>
                     </div>
 
@@ -377,7 +377,7 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3000';
 
 type TipoAjuste = 'valor' | 'percentual';
-type FormaPagamento = 'DINHEIRO' | 'CARTAO' | 'PIX';
+type FormaPagamento = 'EFECTIVO' | 'TARJETA' | 'PAGOMOVIL';
 type FormaPagamentoResumo = FormaPagamento | 'COMBINADO';
 
 interface Cliente {
@@ -463,15 +463,15 @@ const beep = new Audio('/src/assets/beep-02.mp3');
 const beepErro = new Audio('/src/assets/error-sounds.mp3');
 
 const LABEL_FORMA_PAGAMENTO: Record<FormaPagamento, string> = {
-  DINHEIRO: 'Dinheiro',
-  CARTAO: 'Cartão',
-  PIX: 'PIX',
+  EFECTIVO: 'Efectivo',
+  TARJETA: 'Tarjeta',
+  PAGOMOVIL: 'Pago Movil',
 };
 
 const pagamentos = ref<{ forma: FormaPagamento; label: string; valor: number | null }[]>([
-  { forma: 'DINHEIRO', label: 'Dinheiro', valor: null },
-  { forma: 'CARTAO', label: 'Cartão', valor: null },
-  { forma: 'PIX', label: 'PIX', valor: null },
+  { forma: 'EFECTIVO', label: 'Efectivo', valor: null },
+  { forma: 'TARJETA', label: 'Tarjeta', valor: null },
+  { forma: 'PAGOMOVIL', label: 'Pago Movil', valor: null },
 ]);
 
 const modalFaturar = ref(false);
@@ -501,7 +501,7 @@ watch(modalFaturar, async (abriu) => {
 const round2 = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
 const isFormaSemTroco = (forma?: string) =>
-  ['PIX', 'CARTAO', 'CARTÃO'].includes((forma || '').toUpperCase());
+  ['PAGOMOVIL', 'TARJETA'].includes((forma || '').toUpperCase());
 
 const totalInformado = computed(() => {
   const total = pagamentos.value.reduce((acc, item) => {
@@ -513,7 +513,7 @@ const totalInformado = computed(() => {
 
 const totalEmDinheiro = computed(() => {
   const totalDinheiroInformado = pagamentos.value
-    .filter((item) => item.forma === 'DINHEIRO')
+    .filter((item) => item.forma === 'EFECTIVO')
     .reduce((acc, item) => acc + (Number(item.valor) || 0), 0);
 
   return round2(Math.max(0, totalDinheiroInformado - troco.value));
@@ -1073,7 +1073,7 @@ async function finalizarVenda() {
 
   const pagamentosFinanceiro: PagamentoInformado[] = pagamentosPayload
     .map((item) => {
-      if (item.forma === 'DINHEIRO') {
+      if (item.forma === 'EFECTIVO') {
         return {
           ...item,
           valor: round2(Math.max(0, item.valor - trocoComprovante)),
@@ -1167,9 +1167,9 @@ async function finalizarVenda() {
 
 function limparPagamentos() {
   pagamentos.value = [
-    { forma: 'DINHEIRO', label: 'Dinheiro', valor: null },
-    { forma: 'CARTAO', label: 'Cartão', valor: null },
-    { forma: 'PIX', label: 'PIX', valor: null },
+    { forma: 'EFECTIVO', label: 'Efectivo', valor: null },
+    { forma: 'TARJETA', label: 'Tarjeta', valor: null },
+    { forma: 'PAGOMOVIL', label: 'Pago Movil', valor: null },
   ];
 }
 

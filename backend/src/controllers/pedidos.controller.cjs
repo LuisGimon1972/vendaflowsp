@@ -30,7 +30,7 @@ async function criarPedido(req, res) {
   const statusValidos = ['ABERTO', 'FINALIZADO'];
   const origensValidas = ['PEDIDO', 'PDV'];
   const tiposValidos = ['valor', 'percentual'];
-  const formasValidas = ['DINHEIRO', 'PIX', 'CARTAO'];
+  const formasValidas = ['EFECTIVO', 'PAGOMOVIL', 'TARJETA'];
 
   if (!tiposValidos.includes(descontoTipoFinal)) {
     return res.status(400).json({ erro: 'Tipo de desconto inválido' });
@@ -552,7 +552,7 @@ async function atualizarPedido(req, res) {
   const statusValidos = ['ABERTO', 'FINALIZADO'];
   const origensValidas = ['PEDIDO', 'PDV'];
   const tiposValidos = ['valor', 'percentual'];
-  const formasValidas = ['DINHEIRO', 'PIX', 'CARTAO'];
+  const formasValidas = ['EFECTIVO', 'PAGOMOVIL', 'TARJETA'];
 
   if (!tiposValidos.includes(descontoTipoFinal)) {
     return res.status(400).json({

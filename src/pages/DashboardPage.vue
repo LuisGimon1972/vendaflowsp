@@ -6,7 +6,7 @@
       <div class="col">
         <q-card class="bg-green-2 border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Faturamento</div>
+            <div class="text-subtitle2 text-grey-8">Faturamiento</div>
             <div class="text-h5 text-green-8">
               {{ formatarMoeda(dashboard.cards.faturamentoTotal) }}
             </div>
@@ -26,7 +26,7 @@
       <div class="col">
         <q-card class="bg-green-1 border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Produtos em Estoque</div>
+            <div class="text-subtitle2 text-grey-8">Productos en Estoque</div>
             <div class="text-h5 text-green-8">{{ dashboard.cards.totalProdutos }}</div>
           </q-card-section>
         </q-card>
@@ -46,7 +46,7 @@
       <div class="col">
         <q-card class="bg-red-1 border">
           <q-card-section>
-            <div class="text-subtitle2 text-grey-8">Estoque Baixo</div>
+            <div class="text-subtitle2 text-grey-8">Estoque Bajo</div>
             <div class="text-h5 text-red-8">{{ dashboard.cards.estoqueBaixo }}</div>
           </q-card-section>
         </q-card>
@@ -57,8 +57,8 @@
       <div class="col">
         <q-card flat bordered class="border">
           <q-card-section>
-            <div class="text-h6">Vendas por Mês</div>
-            <div class="text-caption text-grey-7 q-mb-md">Evolução do faturamento mensal</div>
+            <div class="text-h6">Ventas por Mes</div>
+            <div class="text-caption text-grey-7 q-mb-md">Evolución del facturamiento mensual</div>
 
             <apexchart
               type="line"
@@ -73,7 +73,7 @@
         <q-card flat bordered class="border">
           <q-card-section>
             <div class="text-h6">Pedidos por Status</div>
-            <div class="text-caption text-grey-7 q-mb-md">Visão rápida da situação dos pedidos</div>
+            <div class="text-caption text-grey-7 q-mb-md">Visión rápida de la situación de los pedidos</div>
 
             <apexchart type="donut" height="320" :options="chartOptions" :series="chartSeries" />
           </q-card-section>
@@ -83,9 +83,9 @@
       <div class="col">
         <q-card flat bordered class="border">
           <q-card-section>
-            <div class="text-h6">Produtos Mais Vendidos</div>
+            <div class="text-h6">Productos Mas Vendidos</div>
             <div class="text-caption text-grey-7 q-mb-md">
-              Top produtos com maior volume de vendas
+              Top productos con mayor volúmen de ventas
             </div>
 
             <apexchart
@@ -255,7 +255,7 @@ const chartOptions = computed(() => ({
 function traduzirStatus(status: string) {
   switch (status) {
     case 'ABERTO':
-      return 'Abertos';
+      return 'Abiertos';
     case 'FINALIZADO':
       return 'Finalizados';
     case 'CANCELADO':
