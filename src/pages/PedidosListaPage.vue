@@ -2,14 +2,14 @@
   <q-page padding class="bg-grey-2">
     <div class="row items-center justify-between q-mb-md">
       <div>
-        <div class="text-h5">Pedidos e Vendas</div>
-        <div class="text-caption text-grey-7">Histórico de Pedidos e Vendas no PDV</div>
+        <div class="text-h5">Pedidos y Ventas</div>
+        <div class="text-caption text-grey-7">Histórico de Pedidos y Vendas en el TPV</div>
       </div>
 
       <q-btn
         color="primary"
         icon="add"
-        label="Novo Pedido"
+        label="Nuevo Pedido"
         style="border-radius: 12px"
         to="/pedidos"
       />
@@ -44,7 +44,7 @@
             <q-btn
               color="warning"
               icon="filter_alt_off"
-              label="Limpar Filtros"
+              label="Limpiar Filtros"
               class="border"
               :disable="!filtroOrigem && !filtroStatus"
               @click="limparFiltros"
@@ -61,7 +61,7 @@
           row-key="id"
           :loading="loading"
           no-data-label="Nenhum pedido encontrado"
-         :pagination="{ rowsPerPage: 10 }"
+          :pagination="{ rowsPerPage: 10 }"
         >
           <template #body-cell-data="props">
             <q-td :props="props">
@@ -144,7 +144,7 @@
         <q-card-section>
           <div class="row q-col-gutter-md q-mb-md">
             <div class="col-12 col-md-3">
-              <div class="text-caption text-grey-7">Data</div>
+              <div class="text-caption text-grey-7">Fecha</div>
               <div>{{ formatarData(pedidoDetalhe?.data) }}</div>
             </div>
 
@@ -154,12 +154,12 @@
             </div>
 
             <div class="col-12 col-md-3">
-              <div class="text-caption text-grey-7">Desconto</div>
+              <div class="text-caption text-grey-7">Descuento</div>
               <div class="text-negative">- {{ formatarMoeda(pedidoDetalhe?.desconto || 0) }}</div>
             </div>
 
             <div class="col-12 col-md-3">
-              <div class="text-caption text-grey-7">Acréscimo</div>
+              <div class="text-caption text-grey-7">Recargo</div>
               <div class="text-positive">+ {{ formatarMoeda(pedidoDetalhe?.acrescimo || 0) }}</div>
             </div>
           </div>
@@ -209,7 +209,7 @@
 
                 <q-item>
                   <q-item-section>
-                    <q-item-label>Desconto</q-item-label>
+                    <q-item-label>Descuento</q-item-label>
                   </q-item-section>
                   <q-item-section side class="text-negative">
                     - {{ formatarMoeda(pedidoDetalhe?.desconto || 0) }}
@@ -218,7 +218,7 @@
 
                 <q-item>
                   <q-item-section>
-                    <q-item-label>Acréscimo</q-item-label>
+                    <q-item-label>Recargo</q-item-label>
                   </q-item-section>
                   <q-item-section side class="text-positive">
                     + {{ formatarMoeda(pedidoDetalhe?.acrescimo || 0) }}
@@ -308,15 +308,15 @@ const dialogDetalhes = ref(false);
 const pedidoDetalhe = ref<PedidoDetalhe | null>(null);
 
 const columns = [
-  { name: 'id', label: 'Número', field: 'id', align: 'left' as const },
-  { name: 'origem', label: 'Origem', field: 'origem', align: 'left' as const },
+  { name: 'id', label: 'ID', field: 'id', align: 'left' as const },
+  { name: 'origem', label: 'Origen', field: 'origem', align: 'left' as const },
   { name: 'cliente_nome', label: 'Cliente', field: 'cliente_nome', align: 'left' as const },
-  { name: 'data', label: 'Data', field: 'data', align: 'left' as const },
+  { name: 'data', label: 'Fecha', field: 'data', align: 'left' as const },
   { name: 'status', label: 'Status', field: 'status', align: 'left' as const },
   { name: 'desconto', label: 'Desconto', field: 'desconto', align: 'left' as const },
-  { name: 'acrescimo', label: 'Acréscimo', field: 'acrescimo', align: 'left' as const },
+  { name: 'acrescimo', label: 'Recargo', field: 'acrescimo', align: 'left' as const },
   { name: 'total', label: 'Total', field: 'total', align: 'left' as const },
-  { name: 'acoes', label: 'Ações', field: 'acoes', align: 'center' as const },
+  { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'center' as const },
 ];
 
 const columnsItens = [

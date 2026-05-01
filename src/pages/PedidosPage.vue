@@ -192,7 +192,7 @@
                   min="0"
                   :max="descontoTipo === 'percentual' ? 99 : undefined"
                   outlined
-                  label="Desconto"
+                  label="Descuento"
                   dense
                 >
                   <template #prepend>
@@ -253,7 +253,7 @@
 
             <div class="row justify-between q-mb-sm">
               <span class="text-grey-7">
-                Desconto
+                Descuento
                 <small v-if="descontoTipo === 'percentual'">({{ descontoValor }}%)</small>
               </span>
               <strong>{{ formatarMoeda(descontoCalculado) }}</strong>
@@ -261,7 +261,7 @@
 
             <div class="row justify-between q-mb-sm">
               <span class="text-grey-7">
-                Acréscimo
+                Recargo
                 <small v-if="acrescimoTipo === 'percentual'">({{ acrescimoValor }}%)</small>
               </span>
               <strong>{{ formatarMoeda(acrescimoCalculado) }}</strong>

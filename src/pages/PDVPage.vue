@@ -4,16 +4,16 @@
       <div class="col-12 col-md-8">
         <q-card flat bordered class="q-mb-md border">
           <q-card-section>
-            <div class="text-h5">Ponto de Venda</div>
+            <div class="text-h5">Punto de Venta</div>
             <div class="text-caption text-grey-7">
-              Venda rápida com seleção de cliente e controle automático de estoque
+              Venda rápida con selección de cliente y control automático de estoque
             </div>
           </q-card-section>
         </q-card>
 
         <q-card flat bordered class="q-mb-md border">
           <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">Cliente da Venda</div>
+            <div class="text-subtitle1 text-weight-medium q-mb-md">Cliente de la Venta</div>
 
             <q-select
               v-model="clienteSelecionado"
@@ -28,7 +28,7 @@
               clearable
               use-input
               input-debounce="300"
-              label="Selecionar cliente (opcional)"
+              label="Seleccionar cliente (opcional)"
               @filter="filtrarClientes"
             />
           </q-card-section>
@@ -36,7 +36,7 @@
 
         <q-card flat bordered class="border">
           <q-card-section>
-            <div class="text-subtitle1 text-weight-medium q-mb-md">Produtos</div>
+            <div class="text-subtitle1 text-weight-medium q-mb-md">Productos</div>
 
             <q-input
               ref="inputBusca"
@@ -102,7 +102,7 @@
             <q-separator class="q-my-md" />
 
             <div v-if="carrinho.length === 0" class="text-grey-7 text-center q-py-xl">
-              Nenhum item adicionado
+              Ningún ítem adicionado
             </div>
 
             <div v-else>
@@ -115,14 +115,14 @@
                   <div class="row items-center justify-between q-col-gutter-sm">
                     <div class="col-auto">
                       <q-avatar size="55px" rounded>
-                        <img v-if="item.foto" :src="item.foto" alt="Foto do produto" />
+                        <img v-if="item.foto" :src="item.foto" alt="Imagen del producto" />
                         <q-icon v-else name="image" color="grey-5" />
                       </q-avatar>
                     </div>
                     <div class="col" style="margin-top: -15px">
                       <div class="text-weight-medium">{{ item.nome }}</div>
                       <div class="text-caption text-grey-7">
-                        {{ formatarMoeda(item.preco) }} por unidade
+                        {{ formatarMoeda(item.preco) }} por unidad
                       </div>
                     </div>
 
@@ -185,7 +185,7 @@
                   min="0"
                   :max="descontoTipo === 'percentual' ? 100 : undefined"
                   outlined
-                  label="Desconto"
+                  label="Descuento"
                   dense
                 >
                   <template #prepend>
@@ -242,7 +242,7 @@
 
             <div class="row justify-between q-mb-sm">
               <span class="text-grey-7">
-                Desconto
+                Descuento
                 <small v-if="descontoTipo === 'percentual'"> ({{ descontoValor }}%) </small>
               </span>
               <strong>{{ formatarMoeda(descontoCalculado) }}</strong>
@@ -250,7 +250,7 @@
 
             <div class="row justify-between q-mb-sm">
               <span class="text-grey-7">
-                Acréscimo
+                Recargo
                 <small v-if="acrescimoTipo === 'percentual'"> ({{ acrescimoValor }}%) </small>
               </span>
               <strong>{{ formatarMoeda(acrescimoCalculado) }}</strong>

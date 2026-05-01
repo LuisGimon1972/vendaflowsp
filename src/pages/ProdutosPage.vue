@@ -469,7 +469,7 @@ async function salvarProduto(): Promise<void> {
 
     Notify.create({
       type: 'positive',
-      message: editando.value ? 'Produto atualizado com sucesso' : 'Produto criado com sucesso',
+      message: editando.value ? '¡Producto actualizado con éxito!' : '¡Producto creado con éxito!',
     });
 
     fecharDialog();
