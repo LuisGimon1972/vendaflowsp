@@ -363,7 +363,7 @@
           </div>
 
           <div class="row justify-between q-mb-md">
-            <span class="text-grey-7">Troco</span>
+            <span class="text-grey-7">Cambio</span>
             <strong class="text-positive text-h6">
               {{ formatarMoeda(troco) }}
             </strong>
