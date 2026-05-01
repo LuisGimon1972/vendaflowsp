@@ -59,7 +59,7 @@
       bordered
       class="border grade-azul"
       no-data-label="Ningún producto encontrado"
-     :pagination="{ rowsPerPage: 10 }"
+      :pagination="{ rowsPerPage: 10 }"
     >
       <template v-slot:body-cell-foto="props">
         <q-td>
@@ -489,8 +489,8 @@ async function excluirProduto(id?: number): Promise<void> {
   if (!id || id <= 0) return;
 
   Dialog.create({
-    title: 'Confirmar exclusão',
-    message: 'Deseja excluir este produto?',
+    title: 'Confirmar exclusión',
+    message: '¿Desea excluir este produto?',
     ok: {
       label: 'Excluir',
       color: 'negative',
@@ -508,7 +508,7 @@ async function excluirProduto(id?: number): Promise<void> {
 
       Notify.create({
         type: 'positive',
-        message: 'Produto excluído com sucesso',
+        message: '¡Producto excluído con éxito!',
       });
 
       await carregarProdutos();
@@ -525,8 +525,8 @@ async function ativarProduto(id?: number): Promise<void> {
   if (!id || id <= 0) return;
 
   Dialog.create({
-    title: 'Confirmar ativação',
-    message: 'Deseja ativar este produto?',
+    title: 'Confirmar activación',
+    message: '¿Desea activar este produto?',
     ok: {
       label: 'Ativar',
       color: 'positive',
@@ -546,7 +546,7 @@ async function ativarProduto(id?: number): Promise<void> {
 
       Notify.create({
         type: 'positive',
-        message: 'Produto ativado com sucesso',
+        message: '¡Producto ativado con éxito!',
       });
 
       await carregarProdutos();

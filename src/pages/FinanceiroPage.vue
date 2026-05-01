@@ -2,7 +2,7 @@
   <q-page padding class="bg-grey-2">
     <div class="row items-center justify-between q-mb-md">
       <div>
-        <div class="text-h5">Financeiro</div>
+        <div class="text-h5">Financiero</div>
         <div class="text-caption text-grey-7">Control de entradas por período y origen</div>
       </div>
     </div>
@@ -48,7 +48,13 @@
       <q-card-section>
         <div class="row q-col-gutter-md items-end">
           <div class="col-12 col-md-2">
-            <q-input v-model="filtros.data_inicio" type="date" outlined dense label="Fecha inicio" />
+            <q-input
+              v-model="filtros.data_inicio"
+              type="date"
+              outlined
+              dense
+              label="Fecha inicio"
+            />
           </div>
 
           <div class="col-12 col-md-2">

@@ -619,10 +619,8 @@ function textoMonetarioParaNumero(value: unknown): number | null {
   if (temVirgula && temPonto) {
     texto = texto.replace(/\./g, '').replace(',', '.');
   } else if (temVirgula) {
-
     texto = texto.replace(',', '.');
   } else if (temPonto && /^\d{1,3}(\.\d{3})+$/.test(texto)) {
-
     texto = texto.replace(/\./g, '');
   }
 
@@ -823,10 +821,10 @@ function selecionarForma(tipo: FormaPagamento) {
 
 const columns = [
   { name: 'nome', label: 'Produto', field: 'nome', align: 'left' as const },
-  { name: 'preco', label: 'Preço', field: 'preco', align: 'left' as const },
-  { name: 'quantidade', label: 'Qtd.', field: 'quantidade', align: 'left' as const },
+  { name: 'preco', label: 'Precio', field: 'preco', align: 'left' as const },
+  { name: 'quantidade', label: 'Cantidad', field: 'quantidade', align: 'left' as const },
   { name: 'subtotal', label: 'Subtotal', field: 'subtotal', align: 'left' as const },
-  { name: 'acoes', label: 'Ações', field: 'acoes', align: 'center' as const },
+  { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'center' as const },
 ];
 
 const produtoAtual = computed(() => {
@@ -1136,19 +1134,19 @@ function filtrarProdutos(val: string, update: (fn: () => void) => void) {
 
 function adicionarItem() {
   if (!produtoSelecionado.value) {
-    Notify.create({ type: 'warning', message: 'Selecione um produto' });
+    Notify.create({ type: 'warning', message: '¡Seleccione un producto"!' });
     return;
   }
 
   if (!quantidade.value || quantidade.value <= 0) {
-    Notify.create({ type: 'warning', message: 'Informe uma quantidade válida' });
+    Notify.create({ type: 'warning', message: '¡Informe una cantidad válida!' });
     return;
   }
 
   const produto = produtos.value.find((p) => p.id === produtoSelecionado.value);
 
   if (!produto) {
-    Notify.create({ type: 'negative', message: 'Produto não encontrado' });
+    Notify.create({ type: 'negative', message: '¡Producto no encontrado!' });
     return;
   }
 
@@ -1157,7 +1155,7 @@ function adicionarItem() {
   if (quantidade.value > estoqueProduto) {
     Notify.create({
       type: 'negative',
-      message: `Estoque insuficiente. Disponível: ${estoqueProduto}`,
+      message: `¡Estoque insuficiente¡ Disponível: ${estoqueProduto}`,
     });
     return;
   }
@@ -1194,23 +1192,23 @@ function adicionarItem() {
 
   Notify.create({
     type: 'positive',
-    message: 'Produto adicionado ao pedido',
+    message: '¡Producto adicionado al pedido!',
   });
 }
 
 function removerItem(produtoId: number) {
   itens.value = itens.value.filter((item) => item.produto_id !== produtoId);
-  Notify.create({ type: 'info', message: 'Item removido' });
+  Notify.create({ type: 'info', message: '¡Item removido!' });
 }
 
 async function salvarPedido() {
   if (!clienteSelecionado.value) {
-    Notify.create({ type: 'warning', message: 'Selecione um cliente' });
+    Notify.create({ type: 'warning', message: '¡Seleccione un cliente!' });
     return;
   }
 
   if (itens.value.length === 0) {
-    Notify.create({ type: 'warning', message: 'Adicione pelo menos um item' });
+    Notify.create({ type: 'warning', message: '¡Adicione por lo menos un ítem!' });
     return;
   }
 
@@ -1251,14 +1249,14 @@ async function salvarPedido() {
     if (pedidoId.value) {
       if (statusPedido.value === 'CANCELADO') {
         await api.put(`/pedidos/${pedidoId.value}/cancelar`);
-        Notify.create({ type: 'positive', message: 'Pedido cancelado com sucesso' });
+        Notify.create({ type: 'positive', message: '¡Pedido cancelado con éxito!' });
       } else {
         await api.put(`/pedidos/${pedidoId.value}`, payload);
-        Notify.create({ type: 'positive', message: 'Pedido salvo com sucesso' });
+        Notify.create({ type: 'positive', message: '¡Pedido salvo con éxito!' });
       }
     } else {
       await api.post('/pedidos', payload);
-      Notify.create({ type: 'positive', message: 'Pedido salvo com sucesso' });
+      Notify.create({ type: 'positive', message: '¡Pedido salvo con éxito!' });
     }
 
     resetFormulario();
@@ -1287,7 +1285,7 @@ function validarPagamentosFaturamento(): boolean {
   if (pagamentosValidos.length === 0) {
     Notify.create({
       type: 'warning',
-      message: 'Informe pelo menos uma forma de pagamento',
+      message: '¡Informe por lo menos una forma de pago!',
     });
     return false;
   }
@@ -1298,7 +1296,7 @@ function validarPagamentosFaturamento(): boolean {
     if (isFormaSemTroco(item.forma) && item.valorCentavos > restanteCentavos) {
       Notify.create({
         type: 'warning',
-        message: `O valor do ${getLabelFormaPagamento(item.forma)} não pode ser maior que o valor faltante de R$ ${centavosParaValor(
+        message: `El valor del ${getLabelFormaPagamento(item.forma)} no puede ser mayor que el valor faltante de R$ ${centavosParaValor(
           restanteCentavos,
         ).toFixed(2)}.`,
       });
@@ -1326,7 +1324,7 @@ async function confirmarFaturamento() {
   if (possuiValorInvalido) {
     Notify.create({
       type: 'warning',
-      message: 'Existe pagamento com valor inválido',
+      message: '¡Existe pago con valor inválido!',
     });
     return;
   }
@@ -1340,12 +1338,12 @@ async function confirmarFaturamento() {
 
 async function salvarPedidoComPagamento() {
   if (!clienteSelecionado.value) {
-    Notify.create({ type: 'warning', message: 'Selecione um cliente' });
+    Notify.create({ type: 'warning', message: '¡Seleccione un cliente!' });
     return;
   }
 
   if (itens.value.length === 0) {
-    Notify.create({ type: 'warning', message: 'Adicione pelo menos um item' });
+    Notify.create({ type: 'warning', message: '¡Adicione por lo menos un ítem!' });
     return;
   }
 
@@ -1432,12 +1430,9 @@ async function salvarPedidoComPagamento() {
 
       forma_pagamento: formaPagamentoResumo,
 
-
       valor_recebido: centavosParaValor(totalInformadoCentavos.value),
 
-
       troco: trocoComprovante,
-
 
       pagamentos: pagamentosPayload,
 
@@ -1455,13 +1450,13 @@ async function salvarPedidoComPagamento() {
       pedidoIdComprovante =
         pedidoId.value || data?.id || data?.pedido?.id || data?.pedido_id || null;
 
-      Notify.create({ type: 'positive', message: 'Pedido faturado com sucesso' });
+      Notify.create({ type: 'positive', message: '¡Pedido facturado con éxito!' });
     } else {
       const { data } = await api.post('/pedidos', payload);
 
       pedidoIdComprovante = data?.id || data?.pedido?.id || data?.pedido_id || null;
 
-      Notify.create({ type: 'positive', message: 'Pedido faturado com sucesso' });
+      Notify.create({ type: 'positive', message: '¡Pedido facturado con éxito!' });
     }
 
     modalFaturar.value = false;
@@ -1487,7 +1482,7 @@ async function salvarPedidoComPagamento() {
     await carregarProdutos();
     await router.push('/pedidos/lista');
   } catch (error: unknown) {
-    let mensagem = 'Erro ao faturar pedido';
+    let mensagem = 'Erro al facturar pedido';
 
     if (axios.isAxiosError(error)) {
       mensagem = error.response?.data?.erro || mensagem;
@@ -1559,7 +1554,7 @@ async function carregarPedidoEdicao() {
       };
     });
   } catch (error: unknown) {
-    let mensagem = 'Erro ao carregar pedido para edição';
+    let mensagem = 'Error al cargar pedido para edición';
 
     if (axios.isAxiosError(error)) {
       mensagem = error.response?.data?.erro || mensagem;

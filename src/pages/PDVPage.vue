@@ -213,7 +213,7 @@
                   min="0"
                   :max="acrescimoTipo === 'percentual' ? 100 : undefined"
                   outlined
-                  label="Acréscimo"
+                  label="Recargo"
                   dense
                 >
                   <template #prepend>
@@ -289,7 +289,7 @@
                   >
                     <div class="col-4">
                       <div class="text-subtitle2">
-                       {{ pagamento.label }}
+                        {{ pagamento.label }}
                       </div>
                     </div>
 

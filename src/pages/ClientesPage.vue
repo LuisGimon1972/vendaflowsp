@@ -241,8 +241,8 @@ async function excluirCliente(id?: number): Promise<void> {
   if (id == null) return;
 
   Dialog.create({
-    title: 'Confirmação',
-    message: 'Desea excluir este cliente?',
+    title: 'Confirmar exclusión',
+    message: '¿Desea excluir este cliente?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -251,7 +251,7 @@ async function excluirCliente(id?: number): Promise<void> {
 
       Notify.create({
         type: 'positive',
-        message: 'Cliente excluído con éxito!',
+        message: '¡Cliente excluído con éxito!',
       });
 
       await carregarClientes();
@@ -270,8 +270,8 @@ async function ativarCliente(id?: number): Promise<void> {
   if (!id || id <= 0) return;
 
   Dialog.create({
-    title: 'Confirmar ativação',
-    message: 'Deseja ativar este cliente?',
+    title: 'Confirmar ativación',
+    message: '¿Deseja ativar este cliente?',
     ok: {
       label: 'Ativar',
       color: 'positive',
@@ -291,7 +291,7 @@ async function ativarCliente(id?: number): Promise<void> {
 
       Notify.create({
         type: 'positive',
-        message: 'Cliente ativado com sucesso',
+        message: '¡Cliente ativado com sucesso!',
       });
 
       await carregarClientes();
@@ -366,7 +366,7 @@ async function salvarCliente(): Promise<void> {
   if (documentoJaExiste()) {
     Notify.create({
       type: 'warning',
-      message: 'Já existe um cliente com este documento',
+      message: '¡Já existe um cliente com este documento!',
     });
     return;
   }
@@ -379,7 +379,7 @@ async function salvarCliente(): Promise<void> {
     if (!cepValido) {
       Notify.create({
         type: 'warning',
-        message: 'O CEP informado não existe',
+        message: '¡O CEP informado não existe!',
       });
       return;
     }
@@ -391,14 +391,14 @@ async function salvarCliente(): Promise<void> {
 
       Notify.create({
         type: 'positive',
-        message: 'Cliente atualizado com sucesso',
+        message: '¡Cliente atualizado con éxito!',
       });
     } else {
       await axios.post('http://localhost:3000/clientes', form.value);
 
       Notify.create({
         type: 'positive',
-        message: 'Cliente cadastrado com sucesso',
+        message: '¡Cliente registrado con éxito!',
       });
     }
 
