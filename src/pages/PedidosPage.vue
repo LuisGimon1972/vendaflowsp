@@ -333,6 +333,7 @@
                 input-class="text-right"
                 placeholder="0,00"
                 :label="`Valor em ${pagamento.label}`"
+                :disable="deveDesabilitarFormaPagamento(pagamento.forma)"
               >
                 <template #prepend>
                   <span class="text-blue-7 text-caption">R$</span>
@@ -717,6 +718,31 @@ const totalEmDinheiroCentavos = computed(() => {
   return pagamentos.value
     .filter((item) => item.forma === 'EFECTIVO')
     .reduce((acc, item) => acc + valorPositivoEmCentavos(item.valor), 0);
+});
+
+const efectivoCobreTotalPedido = computed(() => {
+  return (
+    totalPedidoCentavos.value > 0 && totalEmDinheiroCentavos.value >= totalPedidoCentavos.value
+  );
+});
+
+function deveDesabilitarFormaPagamento(forma: FormaPagamento): boolean {
+  return forma !== 'EFECTIVO' && efectivoCobreTotalPedido.value;
+}
+
+watch(efectivoCobreTotalPedido, (cobreTotal) => {
+  if (!cobreTotal) return;
+
+  pagamentos.value = pagamentos.value.map((item) => {
+    if (item.forma === 'EFECTIVO') {
+      return item;
+    }
+
+    return {
+      ...item,
+      valor: null,
+    };
+  });
 });
 
 const totalSemTrocoCentavos = computed(() => {
