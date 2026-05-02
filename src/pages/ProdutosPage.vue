@@ -71,7 +71,7 @@
       </template>
 
       <template v-slot:body-cell-acoes="props">
-        <q-td>
+        <q-td :props="props" class="text-center">
           <q-btn
             v-if="props.row.status === 'ATIVO'"
             icon="edit"
@@ -330,7 +330,7 @@ const columns: QTableProps['columns'] = [
     format: (val: number | string) => `R$ ${Number(val).toFixed(2)}`,
   },
   { name: 'estoque', label: 'Estoque', field: 'estoque', align: 'right' },
-  { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'left' },
+  { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'center' },
 ];
 
 watch(fotoArquivo, (file) => {
