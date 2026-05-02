@@ -305,7 +305,8 @@
                         class="sem-setas"
                         input-class="text-right"
                         placeholder="0,00"
-                        :label="`Valor em ${pagamento.label}`"
+                        :label="`Valor en ${pagamento.label}`"
+                        :disable="deveDesabilitarFormaPagamento(pagamento.forma)"
                       >
                         <template #prepend>
                           <span class="text-blue-7 text-caption">R$</span>
@@ -587,6 +588,37 @@ const acrescimoCalculado = computed(() => {
 const totalVenda = computed(() =>
   Math.max(0, subtotalVenda.value - descontoCalculado.value + acrescimoCalculado.value),
 );
+
+const valorEfectivoInformado = computed(() => {
+  const pagamentoEfectivo = pagamentos.value.find((item) => item.forma === 'EFECTIVO');
+  return round2(Number(pagamentoEfectivo?.valor || 0));
+});
+
+const totalVendaCentavos = computed(() => Math.round(Number(totalVenda.value || 0) * 100));
+
+const valorEfectivoInformadoCentavos = computed(() =>
+  Math.round(Number(valorEfectivoInformado.value || 0) * 100),
+);
+
+const efectivoCobreTotalVenda = computed(() => {
+  return (
+    totalVendaCentavos.value > 0 && valorEfectivoInformadoCentavos.value >= totalVendaCentavos.value
+  );
+});
+
+function deveDesabilitarFormaPagamento(forma: FormaPagamento) {
+  return forma !== 'EFECTIVO' && efectivoCobreTotalVenda.value;
+}
+
+watch(efectivoCobreTotalVenda, (cobreTotal) => {
+  if (!cobreTotal) return;
+
+  pagamentos.value.forEach((item) => {
+    if (item.forma !== 'EFECTIVO') {
+      item.valor = null;
+    }
+  });
+});
 
 function formatarMoeda(valor: number): string {
   return new Intl.NumberFormat('pt-BR', {
