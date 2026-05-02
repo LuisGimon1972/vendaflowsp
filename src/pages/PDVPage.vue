@@ -1080,8 +1080,10 @@ async function finalizarVenda() {
 
   let restante = round2(totalVenda.value);
 
-  for (const item of pagamentosPayload) {
-    if (isFormaSemTroco(item.forma) && item.valor > restante) {
+  const pagamentosSemTroco = pagamentosPayload.filter((item) => isFormaSemTroco(item.forma));
+
+  for (const item of pagamentosSemTroco) {
+    if (item.valor > restante) {
       Notify.create({
         type: 'warning',
         message: `O valor do ${item.forma} não pode ser maior que o valor faltante de R$ ${restante.toFixed(2)}.`,
@@ -1089,11 +1091,14 @@ async function finalizarVenda() {
       return;
     }
 
-    const valorAplicado = round2(Math.min(item.valor, restante));
-    restante = round2(Math.max(0, restante - valorAplicado));
+    restante = round2(Math.max(0, restante - item.valor));
   }
 
-  if (faltaPagar.value > 0) {
+  const totalEfectivoInformado = pagamentosPayload
+    .filter((item) => item.forma === 'EFECTIVO')
+    .reduce((acc, item) => acc + Number(item.valor || 0), 0);
+
+  if (round2(totalEfectivoInformado) < restante) {
     Notify.create({
       type: 'warning',
       message: 'O total pago é menor que o total da venda',

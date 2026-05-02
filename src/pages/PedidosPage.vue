@@ -1318,8 +1318,10 @@ function validarPagamentosFaturamento(): boolean {
 
   let restanteCentavos = totalPedidoCentavos.value;
 
-  for (const item of pagamentosValidos) {
-    if (isFormaSemTroco(item.forma) && item.valorCentavos > restanteCentavos) {
+  const pagamentosSemTroco = pagamentosValidos.filter((item) => isFormaSemTroco(item.forma));
+
+  for (const item of pagamentosSemTroco) {
+    if (item.valorCentavos > restanteCentavos) {
       Notify.create({
         type: 'warning',
         message: `El valor del ${getLabelFormaPagamento(item.forma)} no puede ser mayor que el valor faltante de R$ ${centavosParaValor(
@@ -1329,14 +1331,19 @@ function validarPagamentosFaturamento(): boolean {
       return false;
     }
 
-    const valorAplicadoCentavos = Math.min(item.valorCentavos, restanteCentavos);
-    restanteCentavos = Math.max(0, restanteCentavos - valorAplicadoCentavos);
+    restanteCentavos = Math.max(0, restanteCentavos - item.valorCentavos);
   }
 
-  if (restanteCentavos > 0) {
+  const totalEfectivoInformadoCentavos = pagamentosValidos
+    .filter((item) => item.forma === 'EFECTIVO')
+    .reduce((acc, item) => acc + item.valorCentavos, 0);
+
+  if (totalEfectivoInformadoCentavos < restanteCentavos) {
     Notify.create({
       type: 'warning',
-      message: `Falta pagar R$ ${centavosParaValor(restanteCentavos).toFixed(2)}.`,
+      message: `Falta pagar R$ ${centavosParaValor(
+        restanteCentavos - totalEfectivoInformadoCentavos,
+      ).toFixed(2)}.`,
     });
     return false;
   }
