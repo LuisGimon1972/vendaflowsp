@@ -61,7 +61,7 @@
             <q-input v-model="filtros.data_fim" type="date" outlined dense label="Fecha fin" />
           </div>
 
-          <div class="col-12 col-md-2">
+          <div class="col-12 col-md-3">
             <q-select
               v-model="filtros.origem"
               :options="origemOptions"
@@ -74,7 +74,7 @@
             />
           </div>
 
-          <div class="col-12 col-md-2">
+          <div class="col-12 col-md-3">
             <q-select
               v-model="filtros.forma_pagamento"
               :options="formaPagamentoOptions"
@@ -87,17 +87,8 @@
             />
           </div>
 
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-2">
             <div class="row q-col-gutter-sm">
-              <div class="col">
-                <q-btn
-                  color="primary"
-                  label="Filtrar"
-                  class="full-width border"
-                  @click="aplicarFiltros"
-                />
-              </div>
-
               <div class="col">
                 <q-btn
                   color="warning"
@@ -192,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { Notify } from 'quasar';
 import { api } from 'boot/axios';
 import axios from 'axios';
@@ -305,6 +296,8 @@ async function carregarResumoPeriodo() {
       params: {
         data_inicio: filtros.value.data_inicio || undefined,
         data_fim: filtros.value.data_fim || undefined,
+        origem: filtros.value.origem || undefined,
+        forma_pagamento: filtros.value.forma_pagamento || undefined,
       },
     });
 
@@ -369,6 +362,25 @@ async function limparFiltros() {
 
   await Promise.all([carregarResumoPeriodo(), carregarEntradas()]);
 }
+
+watch(
+  () => [filtros.value.origem, filtros.value.forma_pagamento],
+  async () => {
+    await Promise.all([carregarResumoPeriodo(), carregarEntradas()]);
+  },
+);
+
+watch(
+  () => [
+    filtros.value.data_inicio,
+    filtros.value.data_fim,
+    filtros.value.origem,
+    filtros.value.forma_pagamento,
+  ],
+  async () => {
+    await Promise.all([carregarResumoPeriodo(), carregarEntradas()]);
+  },
+);
 
 onMounted(async () => {
   await Promise.all([carregarResumoHoje(), carregarResumoPeriodo(), carregarEntradas()]);
