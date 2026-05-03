@@ -333,7 +333,7 @@
                 input-class="text-right"
                 placeholder="0,00"
                 :label="`Valor en ${pagamento.label}`"
-                :disable="deveDesabilitarFormaPagamento(pagamento.forma)"
+                @update:model-value="onPagamentoChange(index)"
               >
                 <template #prepend>
                   <span class="text-blue-7 text-caption">R$</span>
@@ -720,30 +720,60 @@ const totalEmDinheiroCentavos = computed(() => {
     .reduce((acc, item) => acc + valorPositivoEmCentavos(item.valor), 0);
 });
 
-const efectivoCobreTotalPedido = computed(() => {
-  return (
-    totalPedidoCentavos.value > 0 && totalEmDinheiroCentavos.value >= totalPedidoCentavos.value
-  );
-});
+function onPagamentoChange(indexEditado: number) {
+  const pagamento = pagamentos.value[indexEditado];
+  if (!pagamento) return;
 
-function deveDesabilitarFormaPagamento(forma: FormaPagamento): boolean {
-  return forma !== 'EFECTIVO' && efectivoCobreTotalPedido.value;
+  if (valorPagamentoInvalido(pagamento.valor)) {
+    pagamento.valor = null;
+    return;
+  }
+
+  // Efectivo puede exceder el total, porque el excedente genera cambio.
+  // Al alterar Efectivo, no alteramos Tarjeta ni PagoMovil.
+  if (pagamento.forma === 'EFECTIVO') {
+    return;
+  }
+
+  // Tarjeta y PagoMovil no pueden ser digitados por encima del faltante actual.
+  if (isFormaSemTroco(pagamento.forma)) {
+    validarLimiteFormaSemTroco(indexEditado);
+  }
 }
 
-watch(efectivoCobreTotalPedido, (cobreTotal) => {
-  if (!cobreTotal) return;
+function validarLimiteFormaSemTroco(indexEditado: number) {
+  const pagamento = pagamentos.value[indexEditado];
+  if (!pagamento || !isFormaSemTroco(pagamento.forma)) return;
 
-  pagamentos.value = pagamentos.value.map((item) => {
-    if (item.forma === 'EFECTIVO') {
-      return item;
-    }
+  const totalEfectivoInformadoCentavos = pagamentos.value
+    .filter((item) => item.forma === 'EFECTIVO')
+    .reduce((acc, item) => acc + valorPositivoEmCentavos(item.valor), 0);
 
-    return {
-      ...item,
-      valor: null,
-    };
-  });
-});
+  const totalOutrasFormasSemTrocoCentavos = pagamentos.value.reduce((acc, item, index) => {
+    if (index === indexEditado) return acc;
+    if (!isFormaSemTroco(item.forma)) return acc;
+
+    return acc + valorPositivoEmCentavos(item.valor);
+  }, 0);
+
+  const limiteCentavos = Math.max(
+    0,
+    totalPedidoCentavos.value - totalEfectivoInformadoCentavos - totalOutrasFormasSemTrocoCentavos,
+  );
+
+  const valorInformadoCentavos = valorPositivoEmCentavos(pagamento.valor);
+
+  if (valorInformadoCentavos > limiteCentavos) {
+    pagamento.valor = limiteCentavos > 0 ? centavosParaValor(limiteCentavos) : null;
+
+    Notify.create({
+      type: 'warning',
+      message: `El monto de ${pagamento.label} no puede ser mayor al faltante de ${formatarMoeda(
+        centavosParaValor(limiteCentavos),
+      )}.`,
+    });
+  }
+}
 
 const totalSemTrocoCentavos = computed(() => {
   return pagamentos.value
@@ -1316,34 +1346,31 @@ function validarPagamentosFaturamento(): boolean {
     return false;
   }
 
-  let restanteCentavos = totalPedidoCentavos.value;
-
-  const pagamentosSemTroco = pagamentosValidos.filter((item) => isFormaSemTroco(item.forma));
-
-  for (const item of pagamentosSemTroco) {
-    if (item.valorCentavos > restanteCentavos) {
-      Notify.create({
-        type: 'warning',
-        message: `El valor del ${getLabelFormaPagamento(item.forma)} no puede ser mayor que el valor faltante de R$ ${centavosParaValor(
-          restanteCentavos,
-        ).toFixed(2)}.`,
-      });
-      return false;
-    }
-
-    restanteCentavos = Math.max(0, restanteCentavos - item.valorCentavos);
-  }
-
-  const totalEfectivoInformadoCentavos = pagamentosValidos
-    .filter((item) => item.forma === 'EFECTIVO')
+  const totalSemTrocoInformadoCentavos = pagamentosValidos
+    .filter((item) => isFormaSemTroco(item.forma))
     .reduce((acc, item) => acc + item.valorCentavos, 0);
 
-  if (totalEfectivoInformadoCentavos < restanteCentavos) {
+  if (totalSemTrocoInformadoCentavos > totalPedidoCentavos.value) {
     Notify.create({
       type: 'warning',
-      message: `Falta pagar R$ ${centavosParaValor(
-        restanteCentavos - totalEfectivoInformadoCentavos,
-      ).toFixed(2)}.`,
+      message: `Tarjeta y PagoMovil no pueden superar el total del pedido: ${formatarMoeda(
+        totalPedido,
+      )}.`,
+    });
+    return false;
+  }
+
+  const totalInformadoAtualCentavos = pagamentosValidos.reduce(
+    (acc, item) => acc + item.valorCentavos,
+    0,
+  );
+
+  if (totalInformadoAtualCentavos < totalPedidoCentavos.value) {
+    Notify.create({
+      type: 'warning',
+      message: `Falta pagar ${formatarMoeda(
+        centavosParaValor(totalPedidoCentavos.value - totalInformadoAtualCentavos),
+      )}.`,
     });
     return false;
   }
@@ -1463,7 +1490,7 @@ async function salvarPedidoComPagamento() {
 
       forma_pagamento: formaPagamentoResumo,
 
-      valor_recebido: centavosParaValor(totalInformadoCentavos.value),
+      valor_recebido: centavosParaValor(totalPagoConsideradoCentavos.value),
 
       troco: trocoComprovante,
 
