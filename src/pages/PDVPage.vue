@@ -306,7 +306,7 @@
                         input-class="text-right"
                         placeholder="0,00"
                         :label="`Valor en ${pagamento.label}`"
-                        :disable="deveDesabilitarFormaPagamento(pagamento.forma)"
+                        @update:model-value="onPagamentoChange(index)"
                       >
                         <template #prepend>
                           <span class="text-blue-7 text-caption">R$</span>
@@ -588,37 +588,6 @@ const acrescimoCalculado = computed(() => {
 const totalVenda = computed(() =>
   Math.max(0, subtotalVenda.value - descontoCalculado.value + acrescimoCalculado.value),
 );
-
-const valorEfectivoInformado = computed(() => {
-  const pagamentoEfectivo = pagamentos.value.find((item) => item.forma === 'EFECTIVO');
-  return round2(Number(pagamentoEfectivo?.valor || 0));
-});
-
-const totalVendaCentavos = computed(() => Math.round(Number(totalVenda.value || 0) * 100));
-
-const valorEfectivoInformadoCentavos = computed(() =>
-  Math.round(Number(valorEfectivoInformado.value || 0) * 100),
-);
-
-const efectivoCobreTotalVenda = computed(() => {
-  return (
-    totalVendaCentavos.value > 0 && valorEfectivoInformadoCentavos.value >= totalVendaCentavos.value
-  );
-});
-
-function deveDesabilitarFormaPagamento(forma: FormaPagamento) {
-  return forma !== 'EFECTIVO' && efectivoCobreTotalVenda.value;
-}
-
-watch(efectivoCobreTotalVenda, (cobreTotal) => {
-  if (!cobreTotal) return;
-
-  pagamentos.value.forEach((item) => {
-    if (item.forma !== 'EFECTIVO') {
-      item.valor = null;
-    }
-  });
-});
 
 function formatarMoeda(valor: number): string {
   return new Intl.NumberFormat('pt-BR', {
@@ -1046,6 +1015,116 @@ function removerItem(produtoId: number) {
   carrinho.value = carrinho.value.filter((item) => item.produto_id !== produtoId);
 }
 
+function calcularFaltanteParaForma(index: number) {
+  const pagamentoAtual = pagamentos.value[index];
+  if (!pagamentoAtual) return 0;
+
+  const totalOtrosPagos = pagamentos.value.reduce((acc, item, itemIndex) => {
+    if (itemIndex === index) return acc;
+    return acc + round2(Number(item.valor || 0));
+  }, 0);
+
+  return round2(Math.max(0, totalVenda.value - totalOtrosPagos));
+}
+
+function onPagamentoChange(indexEditado: number) {
+  const pagamento = pagamentos.value[indexEditado];
+  if (!pagamento) return;
+
+  const valorInformado = round2(Number(pagamento.valor || 0));
+
+  if (valorInformado < 0) {
+    pagamento.valor = null;
+    return;
+  }
+
+  // Efectivo puede exceder, porque genera cambio.
+  // No se altera Tarjeta ni Pago Móvil cuando cambia Efectivo.
+  if (pagamento.forma === 'EFECTIVO') {
+    return;
+  }
+
+  // Solo limita cuando el usuario está editando Tarjeta o Pago Móvil.
+  if (isFormaSemTroco(pagamento.forma)) {
+    validarLimiteFormaSemTroco(indexEditado);
+  }
+}
+
+function validarLimiteFormaSemTroco(indexEditado: number) {
+  const pagamento = pagamentos.value[indexEditado];
+  if (!pagamento || !isFormaSemTroco(pagamento.forma)) return;
+
+  const totalEfectivoInformado = pagamentos.value
+    .filter((item) => item.forma === 'EFECTIVO')
+    .reduce((acc, item) => acc + Number(item.valor || 0), 0);
+
+  const totalOutrasFormasSemTroco = pagamentos.value.reduce((acc, item, index) => {
+    if (index === indexEditado) return acc;
+    if (!isFormaSemTroco(item.forma)) return acc;
+
+    return acc + Number(item.valor || 0);
+  }, 0);
+
+  const limite = round2(
+    Math.max(0, totalVenda.value - totalEfectivoInformado - totalOutrasFormasSemTroco),
+  );
+
+  const valorInformado = round2(Number(pagamento.valor || 0));
+
+  if (valorInformado > limite) {
+    pagamento.valor = limite > 0 ? limite : null;
+
+    Notify.create({
+      type: 'warning',
+      message: `El monto de ${pagamento.label} no puede ser mayor al faltante de ${formatarMoeda(limite)}.`,
+    });
+  }
+}
+
+function validarTotalSemTroco() {
+  const totalSemTroco = pagamentos.value
+    .filter((item) => isFormaSemTroco(item.forma))
+    .reduce((acc, item) => acc + Number(item.valor || 0), 0);
+
+  if (round2(totalSemTroco) > round2(totalVenda.value)) {
+    Notify.create({
+      type: 'warning',
+      message: `Tarjeta y Pago Móvil no pueden superar el total de la factura: ${formatarMoeda(totalVenda.value)}.`,
+    });
+  }
+}
+
+function ajustarPagamentosSemTroco(indexEditado?: number) {
+  let restante = round2(totalVenda.value);
+
+  pagamentos.value.forEach((item, index) => {
+    const valorAtual = round2(Number(item.valor || 0));
+
+    if (item.forma === 'EFECTIVO') {
+      restante = round2(Math.max(0, restante - valorAtual));
+      return;
+    }
+
+    if (!isFormaSemTroco(item.forma)) {
+      return;
+    }
+
+    if (valorAtual > restante) {
+      item.valor = restante > 0 ? restante : null;
+
+      // Solo muestra aviso cuando el usuario editó directamente Tarjeta/Pago Móvil
+      if (index === indexEditado) {
+        Notify.create({
+          type: 'warning',
+          message: `El monto de ${item.label} no puede ser mayor al faltante de ${formatarMoeda(restante)}.`,
+        });
+      }
+    }
+
+    restante = round2(Math.max(0, restante - Number(item.valor || 0)));
+  });
+}
+
 async function finalizarVenda() {
   if (carrinho.value.length === 0) {
     Notify.create({
@@ -1063,6 +1142,8 @@ async function finalizarVenda() {
     return;
   }
 
+  const totalVendaAtual = round2(Number(totalVenda.value || 0));
+
   const pagamentosPayload: PagamentoInformado[] = pagamentos.value
     .map((item) => ({
       forma: item.forma,
@@ -1078,55 +1159,55 @@ async function finalizarVenda() {
     return;
   }
 
-  let restante = round2(totalVenda.value);
+  const totalSemTrocoInformado = round2(
+    pagamentosPayload
+      .filter((item) => isFormaSemTroco(item.forma))
+      .reduce((acc, item) => acc + Number(item.valor || 0), 0),
+  );
 
-  const pagamentosSemTroco = pagamentosPayload.filter((item) => isFormaSemTroco(item.forma));
-
-  for (const item of pagamentosSemTroco) {
-    if (item.valor > restante) {
-      Notify.create({
-        type: 'warning',
-        message: `El valor de ${item.forma} no puede ser mayor que el valor faltante de R$ ${restante.toFixed(2)}.`,
-      });
-      return;
-    }
-
-    restante = round2(Math.max(0, restante - item.valor));
-  }
-
-  const totalEfectivoInformado = pagamentosPayload
-    .filter((item) => item.forma === 'EFECTIVO')
-    .reduce((acc, item) => acc + Number(item.valor || 0), 0);
-
-  if (round2(totalEfectivoInformado) < restante) {
+  if (totalSemTrocoInformado > totalVendaAtual) {
     Notify.create({
       type: 'warning',
-      message: 'El total pago es menor que el total de la venda',
+      message: `Tarjeta y Pago Móvil no pueden superar el total de la factura: ${formatarMoeda(totalVendaAtual)}.`,
     });
     return;
   }
 
+  const totalInformado = round2(
+    pagamentosPayload.reduce((acc, item) => acc + Number(item.valor || 0), 0),
+  );
+
+  if (totalInformado < totalVendaAtual) {
+    Notify.create({
+      type: 'warning',
+      message: 'El total pago es menor que el total de la venta',
+    });
+    return;
+  }
+
+  const trocoComprovante = round2(Math.max(0, totalInformado - totalVendaAtual));
+  const totalPagoComprovante = round2(Math.min(totalInformado, totalVendaAtual));
+
   const itensComprovante = carrinho.value.map((item) => ({ ...item }));
   const pagamentosComprovante = pagamentosPayload.map((item) => ({ ...item }));
+
   const clienteNomeComprovante = nomeClienteFinal.value;
   const subtotalComprovante = Number(subtotalVenda.value || 0);
   const descontoComprovante = Number(descontoCalculado.value || 0);
   const acrescimoComprovante = Number(acrescimoCalculado.value || 0);
-  const totalComprovante = Number(totalVenda.value || 0);
-  const totalPagoComprovante = Number(totalPago.value || 0);
-  const trocoComprovante = Number(troco.value || 0);
+  const totalComprovante = totalVendaAtual;
   const dataVendaComprovante = new Date();
 
   const pagamentosFinanceiro: PagamentoInformado[] = pagamentosPayload
     .map((item) => {
-      if (item.forma === 'EFECTIVO') {
-        return {
-          ...item,
-          valor: round2(Math.max(0, item.valor - trocoComprovante)),
-        };
+      if (item.forma !== 'EFECTIVO') {
+        return item;
       }
 
-      return item;
+      return {
+        ...item,
+        valor: round2(Math.max(0, item.valor - trocoComprovante)),
+      };
     })
     .filter((item) => item.valor > 0);
 
@@ -1182,12 +1263,14 @@ async function finalizarVenda() {
     });
 
     limparPagamentos();
+
     carrinho.value = [];
     clienteSelecionado.value = null;
     busca.value = '';
 
     descontoTipo.value = 'valor';
     descontoValor.value = 0;
+
     acrescimoTipo.value = 'valor';
     acrescimoValor.value = 0;
 
@@ -1210,6 +1293,10 @@ async function finalizarVenda() {
     finalizando.value = false;
   }
 }
+
+watch(totalVenda, () => {
+  ajustarPagamentosSemTroco();
+});
 
 function limparPagamentos() {
   pagamentos.value = [
