@@ -16,7 +16,7 @@ BEGIN
         WHERE t.typname = 'origem_pedido'
           AND n.nspname = 'public'
     ) THEN
-        CREATE TYPE public.origem_pedido AS ENUM ('PEDIDO', 'PDV');
+        CREATE TYPE public.origem_pedido AS ENUM ('PEDIDO', 'TPV');
     END IF;
 END
 $$;

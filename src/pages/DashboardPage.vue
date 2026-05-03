@@ -73,7 +73,9 @@
         <q-card flat bordered class="border">
           <q-card-section>
             <div class="text-h6">Pedidos por Status</div>
-            <div class="text-caption text-grey-7 q-mb-md">Visión rápida de la situación de los pedidos</div>
+            <div class="text-caption text-grey-7 q-mb-md">
+              Visión rápida de la situación de los pedidos
+            </div>
 
             <apexchart type="donut" height="320" :options="chartOptions" :series="chartSeries" />
           </q-card-section>

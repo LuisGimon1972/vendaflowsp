@@ -275,7 +275,7 @@
             </div>
 
             <q-btn
-              v-if="statusPedido === 'ABERTO'"
+              v-if="statusPedido === 'ABIERTO'"
               color="primary"
               icon="save"
               label="Finalizar"
@@ -332,7 +332,7 @@
                 class="sem-setas"
                 input-class="text-right"
                 placeholder="0,00"
-                :label="`Valor em ${pagamento.label}`"
+                :label="`Valor en ${pagamento.label}`"
                 :disable="deveDesabilitarFormaPagamento(pagamento.forma)"
               >
                 <template #prepend>
@@ -372,7 +372,7 @@
           <q-checkbox
             v-model="imprimirComprovanteAutomaticamente"
             dense
-            label="Imprimir comprovante após faturar"
+            label="Imprimir comprobante después de faturar"
             class="q-mb-sm"
           />
         </q-card-section>
@@ -408,7 +408,7 @@ type TipoAjuste = 'valor' | 'percentual';
 type FormaPagamento = 'EFECTIVO' | 'TARJETA' | 'PAGOMOVIL';
 type FormaPagamentoResumo = FormaPagamento | 'COMBINADO';
 
-type StatusPedido = 'ABERTO' | 'FINALIZADO' | 'CANCELADO';
+type StatusPedido = 'ABIERTO' | 'FINALIZADO' | 'CANCELADO';
 
 interface Cliente {
   id: number;
@@ -457,7 +457,7 @@ interface PedidoDetalhe {
   cliente_id: number;
   cliente_nome: string;
   status: StatusPedido;
-  origem: 'PEDIDO' | 'PDV';
+  origem: 'PEDIDO' | 'TPV';
   desconto: number;
   acrescimo: number;
   desconto_tipo: TipoAjuste;
@@ -498,13 +498,13 @@ const pedidoId = computed(() => (route.params.id ? Number(route.params.id) : nul
 const tituloPagina = computed(() => (pedidoId.value ? 'Editar Pedido' : 'Nuevo Pedido'));
 
 const statusOptions = [
-  { label: 'ABERTO', value: 'ABERTO' },
+  { label: 'ABIERTO', value: 'ABIERTO' },
   { label: 'FINALIZADO', value: 'FINALIZADO' },
   { label: 'CANCELADO', value: 'CANCELADO' },
 ];
 
-const statusPedido = ref<StatusPedido>('ABERTO');
-const origemPedido = ref<'PEDIDO' | 'PDV'>('PEDIDO');
+const statusPedido = ref<StatusPedido>('ABIERTO');
+const origemPedido = ref<'PEDIDO' | 'TPV'>('PEDIDO');
 
 const salvando = ref(false);
 const finalizando = ref(false);
@@ -556,7 +556,7 @@ watch(modalFaturar, async (abriu) => {
 
 function getStatusColor(status: string) {
   switch (status) {
-    case 'ABERTO':
+    case 'ABIERTO':
       return 'orange';
     case 'FINALIZADO':
       return 'positive';
@@ -846,7 +846,7 @@ function selecionarForma(tipo: FormaPagamento) {
 }
 
 const columns = [
-  { name: 'nome', label: 'Produto', field: 'nome', align: 'left' as const },
+  { name: 'nome', label: 'Producto', field: 'nome', align: 'left' as const },
   { name: 'preco', label: 'Precio', field: 'preco', align: 'left' as const },
   { name: 'quantidade', label: 'Cantidad', field: 'quantidade', align: 'left' as const },
   { name: 'subtotal', label: 'Subtotal', field: 'subtotal', align: 'left' as const },
@@ -924,7 +924,7 @@ function gerarHtmlComprovantePedido(dados: DadosComprovantePedido): string {
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Comprovante do Pedido</title>
+    <title>Comprobante de Pedido</title>
     <style>
       @page {
         size: 80mm auto;
@@ -990,7 +990,7 @@ function gerarHtmlComprovantePedido(dados: DadosComprovantePedido): string {
   <body>
     <div class="comprovante">
       <div class="centralizado">
-        <div class="titulo">COMPROVANTE DE PEDIDO</div>
+        <div class="titulo">COMPROBANTE DE PEDIDO</div>
         <div>${dados.pedidoId ? `Pedido #${escapeHtml(dados.pedidoId)}` : 'Pedido faturado'}</div>
         <div>${escapeHtml(formatarDataHora(dados.dataPedido))}</div>
       </div>
@@ -1012,12 +1012,12 @@ function gerarHtmlComprovantePedido(dados: DadosComprovantePedido): string {
       </div>
 
       <div class="linha">
-        <span>Desconto</span>
+        <span>Descuento</span>
         <strong>${escapeHtml(formatarMoeda(dados.desconto))}</strong>
       </div>
 
       <div class="linha">
-        <span>Acréscimo</span>
+        <span>Recargo</span>
         <strong>${escapeHtml(formatarMoeda(dados.acrescimo))}</strong>
       </div>
 
@@ -1037,7 +1037,7 @@ function gerarHtmlComprovantePedido(dados: DadosComprovantePedido): string {
       </div>
 
       <div class="linha">
-        <span>Troco</span>
+        <span>Cambio</span>
         <strong>${escapeHtml(formatarMoeda(dados.troco))}</strong>
       </div>
 
@@ -1047,7 +1047,7 @@ function gerarHtmlComprovantePedido(dados: DadosComprovantePedido): string {
       <div style="margin-top: 10px; 
             font-size: 9px; 
             text-align: center;">
-            Impressão: VendaFlow Gestão Comercial</div>
+            Impressão: VendaFlow Gestión Comercial</div>
     </div>
   </body>
 </html>`;
@@ -1533,7 +1533,7 @@ function resetFormulario() {
   produtoSelecionado.value = null;
   quantidade.value = 1;
 
-  statusPedido.value = 'ABERTO';
+  statusPedido.value = 'ABIERTO';
   origemPedido.value = 'PEDIDO';
 
   itens.value = [];

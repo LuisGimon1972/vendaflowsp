@@ -192,7 +192,7 @@ interface EntradaFinanceira {
   id: number;
   data: string;
   valor: number;
-  origem: 'PEDIDO' | 'PDV';
+  origem: 'PEDIDO' | 'TPV';
   pedido_id?: number | null;
   forma_pagamento?: string | null;
   descricao?: string | null;
@@ -232,7 +232,7 @@ function dataAtualInput(): string {
 const filtros = ref({
   data_inicio: dataAtualInput(),
   data_fim: dataAtualInput(),
-  origem: '' as '' | 'PEDIDO' | 'PDV',
+  origem: '' as '' | 'PEDIDO' | 'TPV',
   forma_pagamento: '' as '' | 'EFECTIVO' | 'PAGOMOVIL' | 'TARJETA',
 });
 
@@ -244,7 +244,7 @@ const formaPagamentoOptions = [
 
 const origemOptions = [
   { label: 'PEDIDO', value: 'PEDIDO' },
-  { label: 'PDV', value: 'PDV' },
+  { label: 'TPV', value: 'TPV' },
 ];
 
 const columns = [

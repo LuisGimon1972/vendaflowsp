@@ -79,7 +79,7 @@
             <q-td :props="props">
               <q-badge
                 :color="
-                  props.row.status === 'ABERTO'
+                  props.row.status === 'ABIERTO'
                     ? 'orange'
                     : props.row.status === 'FINALIZADO'
                       ? 'positive'
@@ -111,7 +111,7 @@
                 dense
                 icon="edit"
                 color="warning"
-                :disable="props.row.status !== 'ABERTO'"
+                :disable="props.row.status !== 'ABIERTO'"
                 @click="editarPedido(props.row.id)"
               />
 
@@ -253,14 +253,14 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-type OrigemPedido = 'PEDIDO' | 'PDV';
-type StatusPedido = 'ABERTO' | 'FINALIZADO' | 'CANCELADO';
+type OrigemPedido = 'PEDIDO' | 'TPV';
+type StatusPedido = 'ABIERTO' | 'FINALIZADO' | 'CANCELADO';
 
 const filtroOrigem = ref<OrigemPedido | null>(null);
 const filtroStatus = ref<StatusPedido | null>(null);
 
-const opcoesOrigem: OrigemPedido[] = ['PEDIDO', 'PDV'];
-const opcoesStatus: StatusPedido[] = ['ABERTO', 'FINALIZADO', 'CANCELADO'];
+const opcoesOrigem: OrigemPedido[] = ['PEDIDO', 'TPV'];
+const opcoesStatus: StatusPedido[] = ['ABIERTO', 'FINALIZADO', 'CANCELADO'];
 
 const pedidosFiltrados = computed(() => {
   return pedidos.value.filter((p) => {
@@ -313,7 +313,7 @@ const columns = [
   { name: 'cliente_nome', label: 'Cliente', field: 'cliente_nome', align: 'left' as const },
   { name: 'data', label: 'Fecha', field: 'data', align: 'left' as const },
   { name: 'status', label: 'Status', field: 'status', align: 'left' as const },
-  { name: 'desconto', label: 'Desconto', field: 'desconto', align: 'left' as const },
+  { name: 'desconto', label: 'Descuento', field: 'desconto', align: 'left' as const },
   { name: 'acrescimo', label: 'Recargo', field: 'acrescimo', align: 'left' as const },
   { name: 'total', label: 'Total', field: 'total', align: 'left' as const },
   { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'center' as const },

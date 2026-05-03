@@ -73,7 +73,7 @@ async function resumoEntradas(req, res) {
         COALESCE(
           SUM(
             CASE
-              WHEN origem = 'PDV' THEN valor
+              WHEN origem = 'TPV' THEN valor
               ELSE 0
             END
           ),
@@ -119,7 +119,7 @@ async function resumoHoje(req, res) {
         COALESCE(
           SUM(
             CASE
-              WHEN origem = 'PDV' THEN valor
+              WHEN origem = 'TPV' THEN valor
               ELSE 0
             END
           ),

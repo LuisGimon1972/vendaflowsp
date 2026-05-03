@@ -6,7 +6,7 @@
           <q-card-section>
             <div class="text-h5">Punto de Venta</div>
             <div class="text-caption text-grey-7">
-              Venda rápida con selección de cliente y control automático de estoque
+              Venta rápida con selección de cliente y control automático de estoque
             </div>
           </q-card-section>
         </q-card>
@@ -43,7 +43,7 @@
               v-model="busca"
               outlined
               dense
-              label="Buscar produto, ID ou código de barras"
+              label="Buscar producto, ID o código de barras"
               @keyup.enter="buscarOuAdicionarProduto"
             >
               <template #prepend>
@@ -278,7 +278,7 @@
             <q-dialog v-model="modalFaturar" persistent>
               <q-card class="border" style="width: 450px">
                 <q-card-section>
-                  <div class="text-h6">Faturamento</div>
+                  <div class="text-h6">Facturamiento</div>
                 </q-card-section>
 
                 <q-card-section>
@@ -346,7 +346,7 @@
                   <q-checkbox
                     v-model="imprimirComprovanteAutomaticamente"
                     dense
-                    label="Imprimir comprovante após concluir"
+                    label="Imprimir comprobante después de concluir"
                   />
                 </q-card-section>
 
@@ -693,7 +693,7 @@ function gerarHtmlComprovanteVenda(dados: DadosComprovanteVenda): string {
     <html lang="pt-BR">
       <head>
         <meta charset="UTF-8" />
-        <title>Comprovante de venda</title>
+        <title>Comprobante de venta</title>
         <style>
           @page {
             size: 80mm auto;
@@ -763,12 +763,12 @@ function gerarHtmlComprovanteVenda(dados: DadosComprovanteVenda): string {
       <body>
         <div class="comprovante">
           <div class="centro">
-            <div class="titulo">COMPROVANTE DE VENDA</div>
-            <div class="subtitulo">Emitido pelo PDV</div>
+            <div class="titulo">COMPROBANTE DE VENTA</div>
+            <div class="subtitulo">Emitido por TPV</div>
           </div>
 
           <div class="linha">
-            <span>Data</span>
+            <span>Fecha</span>
             <span>${escapeHtml(formatarDataHora(dados.dataVenda))}</span>
           </div>
 
@@ -776,7 +776,7 @@ function gerarHtmlComprovanteVenda(dados: DadosComprovanteVenda): string {
             dados.pedidoId
               ? `
                 <div class="linha">
-                  <span>Venda</span>
+                  <span>Venta</span>
                   <span>#${escapeHtml(dados.pedidoId)}</span>
                 </div>
               `
@@ -800,12 +800,12 @@ function gerarHtmlComprovanteVenda(dados: DadosComprovanteVenda): string {
           </div>
 
           <div class="linha">
-            <span>Desconto</span>
+            <span>Descuento</span>
             <span>${formatarMoeda(dados.desconto)}</span>
           </div>
 
           <div class="linha">
-            <span>Acréscimo</span>
+            <span>Recargo</span>
             <span>${formatarMoeda(dados.acrescimo)}</span>
           </div>
 
@@ -824,18 +824,18 @@ function gerarHtmlComprovanteVenda(dados: DadosComprovanteVenda): string {
           </div>
 
           <div class="linha">
-            <span>Troco</span>
+            <span>Cambio</span>
             <span>${formatarMoeda(dados.troco)}</span>
           </div>
 
           <div class="separador"></div>
 
           <div class="centro">
-            <div>Obrigado pela preferência</div>
+            <div>Obrigado por la preferencia</div>
             <div style="margin-top: 10px; 
             font-size: 9px; 
             text-align: center;">
-            Impressão: VendaFlow Gestão Comercial</div>
+            Impressão: VendaFlow Gestión Comercial</div>
           </div>
         </div>
       </body>
@@ -870,7 +870,7 @@ function imprimirComprovanteVenda(dados: DadosComprovanteVenda) {
   } catch {
     Notify.create({
       type: 'warning',
-      message: 'Venda concluída, mas não foi possível abrir a impressão do comprovante',
+      message: 'Venta concluída, pero no fue posible abrir la impresión del comprobante',
     });
   }
 }
@@ -939,7 +939,7 @@ async function buscarPorIdPro(id: number) {
     beepErro.play();
     Notify.create({
       type: 'negative',
-      message: 'Produto não encontrado',
+      message: 'Producto no encontrado',
     });
 
     busca.value = '';
@@ -965,7 +965,7 @@ async function buscarPorCodigo(codigo: string) {
     beepErro.play();
     Notify.create({
       type: 'negative',
-      message: 'Produto não encontrado',
+      message: 'Producto no encontrado',
     });
 
     busca.value = '';
@@ -978,7 +978,7 @@ function adicionarProduto(produto: Produto) {
     beepErro.play();
     Notify.create({
       type: 'warning',
-      message: `Produto sem estoque: ${produto.nome}`,
+      message: `Producto sin estoque: ${produto.nome}`,
     });
     return;
   }
@@ -989,7 +989,7 @@ function adicionarProduto(produto: Produto) {
     if (itemExistente.quantidade >= itemExistente.estoqueDisponivel) {
       Notify.create({
         type: 'negative',
-        message: `Estoque máximo atingido para ${produto.nome}`,
+        message: `Se ha alcanzado el stock máximo para ${produto.nome}`,
       });
       return;
     }
@@ -1020,7 +1020,7 @@ function aumentarQuantidade(produtoId: number) {
   if (item.quantidade >= item.estoqueDisponivel) {
     Notify.create({
       type: 'warning',
-      message: `Quantidade máxima em estoque para ${item.nome}`,
+      message: `Se ha alcanzado el stock máximo para ${item.nome}`,
     });
     return;
   }
@@ -1050,7 +1050,7 @@ async function finalizarVenda() {
   if (carrinho.value.length === 0) {
     Notify.create({
       type: 'warning',
-      message: 'Adicione pelo menos um produto',
+      message: 'Adicione por lo menos un producto',
     });
     return;
   }
@@ -1058,7 +1058,7 @@ async function finalizarVenda() {
   if (!clienteFinalId.value) {
     Notify.create({
       type: 'negative',
-      message: 'Cliente padrão não encontrado',
+      message: 'Cliente padrón no encontrado',
     });
     return;
   }
@@ -1073,7 +1073,7 @@ async function finalizarVenda() {
   if (pagamentosPayload.length === 0) {
     Notify.create({
       type: 'warning',
-      message: 'Informe pelo menos uma forma de pagamento',
+      message: 'Informe por lo menos una forma de pago',
     });
     return;
   }
@@ -1086,7 +1086,7 @@ async function finalizarVenda() {
     if (item.valor > restante) {
       Notify.create({
         type: 'warning',
-        message: `O valor do ${item.forma} não pode ser maior que o valor faltante de R$ ${restante.toFixed(2)}.`,
+        message: `El valor de ${item.forma} no puede ser mayor que el valor faltante de R$ ${restante.toFixed(2)}.`,
       });
       return;
     }
@@ -1101,7 +1101,7 @@ async function finalizarVenda() {
   if (round2(totalEfectivoInformado) < restante) {
     Notify.create({
       type: 'warning',
-      message: 'O total pago é menor que o total da venda',
+      message: 'El total pago es menor que el total de la venda',
     });
     return;
   }
@@ -1137,7 +1137,7 @@ async function finalizarVenda() {
 
     const { data: pedidoCriado } = await api.post('/pedidos', {
       cliente_id: clienteFinalId.value,
-      origem: 'PDV',
+      origem: 'TPV',
       status: 'FINALIZADO',
 
       desconto: descontoComprovante,
@@ -1196,7 +1196,7 @@ async function finalizarVenda() {
     await carregarProdutos();
     focarBusca();
   } catch (error: unknown) {
-    let mensagem = 'Erro ao finalizar venda';
+    let mensagem = 'Error al finalizar venta';
 
     if (axios.isAxiosError(error)) {
       mensagem = error.response?.data?.erro || mensagem;

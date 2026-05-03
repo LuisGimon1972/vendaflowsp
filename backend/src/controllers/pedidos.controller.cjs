@@ -18,7 +18,7 @@ async function criarPedido(req, res) {
     pagamentos,
   } = req.body;
 
-  const statusFinal = status || 'ABERTO';
+  const statusFinal = status || 'ABIERTO';
   const origemFinal = origem || 'PEDIDO';
 
   const descontoTipoFinal = desconto_tipo || 'valor';
@@ -27,8 +27,8 @@ async function criarPedido(req, res) {
   const descontoValorFinal = Number(desconto_valor ?? desconto ?? 0);
   const acrescimoValorFinal = Number(acrescimo_valor ?? acrescimo ?? 0);
 
-  const statusValidos = ['ABERTO', 'FINALIZADO'];
-  const origensValidas = ['PEDIDO', 'PDV'];
+  const statusValidos = ['ABIERTO', 'FINALIZADO'];
+  const origensValidas = ['PEDIDO', 'TPV'];
   const tiposValidos = ['valor', 'percentual'];
   const formasValidas = ['EFECTIVO', 'PAGOMOVIL', 'TARJETA'];
 
@@ -257,7 +257,7 @@ async function criarPedido(req, res) {
     );
 
     if (statusFinal === 'FINALIZADO') {
-      const descricao = origemFinal === 'PDV' ? 'Venda finalizada no PDV' : 'Pedido finalizado';
+      const descricao = origemFinal === 'TPV' ? 'Venta finalizada en el TPV' : 'Pedido finalizado';
 
       if (pagamentosArray.length > 0) {
         for (const pagamento of pagamentosArray) {
@@ -400,7 +400,7 @@ async function atualizarStatusPedido(req, res) {
   const { id } = req.params;
   const { status } = req.body;
 
-  const statusValidos = ['ABERTO', 'FINALIZADO', 'CANCELADO'];
+  const statusValidos = ['ABIERTO', 'FINALIZADO', 'CANCELADO'];
 
   if (!statusValidos.includes(status)) {
     return res.status(400).json({
@@ -540,7 +540,7 @@ async function atualizarPedido(req, res) {
     });
   }
 
-  const statusFinal = status || 'ABERTO';
+  const statusFinal = status || 'ABIERTO';
   const origemFinal = origem || 'PEDIDO';
 
   const descontoTipoFinal = desconto_tipo || 'valor';
@@ -549,8 +549,8 @@ async function atualizarPedido(req, res) {
   const descontoValorFinal = Number(desconto_valor ?? desconto ?? 0);
   const acrescimoValorFinal = Number(acrescimo_valor ?? acrescimo ?? 0);
 
-  const statusValidos = ['ABERTO', 'FINALIZADO'];
-  const origensValidas = ['PEDIDO', 'PDV'];
+  const statusValidos = ['ABIERTO', 'FINALIZADO'];
+  const origensValidas = ['PEDIDO', 'TPV'];
   const tiposValidos = ['valor', 'percentual'];
   const formasValidas = ['EFECTIVO', 'PAGOMOVIL', 'TARJETA'];
 
@@ -568,7 +568,7 @@ async function atualizarPedido(req, res) {
 
   if (!statusValidos.includes(statusFinal)) {
     return res.status(400).json({
-      erro: 'Status inválido para atualização. Use ABERTO ou FINALIZADO.',
+      erro: 'Status inválido para atualização. Use ABIERTO ou FINALIZADO.',
     });
   }
 
@@ -580,13 +580,13 @@ async function atualizarPedido(req, res) {
 
   if (Number.isNaN(descontoValorFinal) || descontoValorFinal < 0) {
     return res.status(400).json({
-      erro: 'Desconto inválido',
+      erro: 'Descuento inválido',
     });
   }
 
   if (Number.isNaN(acrescimoValorFinal) || acrescimoValorFinal < 0) {
     return res.status(400).json({
-      erro: 'Acréscimo inválido',
+      erro: 'Recargo inválido',
     });
   }
 
@@ -818,13 +818,13 @@ async function atualizarPedido(req, res) {
       `
       DELETE FROM financeiro_entradas
       WHERE pedido_id = $1
-        AND descricao IN ('Pedido finalizado', 'Venda finalizada no PDV')
+        AND descricao IN ('Pedido finalizado', 'Venta finalizada en el TPV')
       `,
       [id],
     );
 
     if (statusFinal === 'FINALIZADO') {
-      const descricao = origemFinal === 'PDV' ? 'Venda finalizada no PDV' : 'Pedido finalizado';
+      const descricao = origemFinal === 'TPV' ? 'VenTa finalizada en el TPV' : 'Pedido finalizado';
 
       if (pagamentosArray.length > 0) {
         for (const pagamento of pagamentosArray) {
