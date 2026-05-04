@@ -573,7 +573,7 @@ const produtosFiltrados = computed(() => {
   const termo = busca.value.toLowerCase().trim();
 
   return produtos.value.filter((produto) => {
-    const ativo = produto.status !== 'INATIVO';
+    const ativo = produto.status !== 'INACTIVO';
 
     if (!termo) {
       return ativo;
@@ -869,7 +869,7 @@ function imprimirComprovanteVenda(dados: DadosComprovanteVenda) {
 async function carregarClientes() {
   const { data } = await api.get<Cliente[]>('/clientes', {
     params: {
-      status: 'ATIVO',
+      status: 'ACTIVO',
     },
   });
 
