@@ -256,7 +256,7 @@ const chartOptions = computed(() => ({
 
 function traduzirStatus(status: string) {
   switch (status) {
-    case 'ABERTO':
+    case 'ABIERTO':
       return 'Abiertos';
     case 'FINALIZADO':
       return 'Finalizados';
