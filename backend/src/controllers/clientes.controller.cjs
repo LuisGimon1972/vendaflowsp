@@ -68,7 +68,7 @@ async function criarCliente(req, res) {
         bairro,
         numero,
         cidade || null,
-        status || 'ATIVO',
+        status || 'ACTIVO',
         documento || null,
       ],
     );
@@ -114,7 +114,7 @@ async function atualizarCliente(req, res) {
         bairro,
         numero,
         cidade || null,
-        status || 'ATIVO',
+        status || 'ACTIVO',
         documento || null,
         id,
       ],
@@ -141,7 +141,7 @@ async function atualizarStatusCliente(req, res) {
   const id = Number(req.params.id);
   const status = req.body?.status?.trim?.().toUpperCase();
 
-  const statusValidos = ['ATIVO', 'INATIVO'];
+  const statusValidos = ['ACTIVO', 'INACTIVO'];
 
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({ erro: 'ID inválido' });
@@ -169,7 +169,7 @@ async function atualizarStatusCliente(req, res) {
     return res.status(200).json({
       sucesso: true,
       mensagem:
-        status === 'ATIVO' ? 'Cliente ativado com sucesso' : 'Cliente desativado com sucesso',
+        status === 'ACTIVO' ? 'Cliente ativado com sucesso' : 'Cliente desativado com sucesso',
       cliente: result.rows[0],
     });
   } catch (err) {
@@ -188,9 +188,9 @@ async function excluirCliente(req, res) {
     const result = await pool.query(
       `
       UPDATE clientes
-      SET status = 'INATIVO'
+      SET status = 'INACTIVO'
       WHERE id = $1
-        AND status = 'ATIVO'
+        AND status = 'ACTIVO'
       RETURNING id
       `,
       [id],

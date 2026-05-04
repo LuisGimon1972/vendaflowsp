@@ -44,7 +44,7 @@ async function buscarProduto(req, res) {
       SELECT *
       FROM produtos
       WHERE id = $1
-        AND status = 'ATIVO'
+        AND status = 'ACTIVO'
       `,
       [id],
     );
@@ -81,7 +81,7 @@ async function criarProduto(req, res) {
         categoria || null,
         preco || 0,
         estoque || 0,
-        status || 'ATIVO',
+        status || 'ACTIVO',
         foto || null,
         codigo_barras || null,
       ],
@@ -144,7 +144,7 @@ async function atualizarProduto(req, res) {
         categoria ?? null,
         preco ?? 0,
         estoque ?? 0,
-        status ?? 'ATIVO',
+        status ?? 'ACTIVO',
         foto ?? null,
         codigo_barras ?? null,
         id,
@@ -192,7 +192,7 @@ async function excluirProduto(req, res) {
 
     const produtoAtual = produtoResult.rows[0];
 
-    if (produtoAtual.status === 'INATIVO') {
+    if (produtoAtual.status === 'INACTIVO') {
       await client.query('ROLLBACK');
       return res.status(400).json({ erro: 'Produto já está desativado' });
     }
@@ -200,7 +200,7 @@ async function excluirProduto(req, res) {
     const result = await client.query(
       `
       UPDATE produtos
-      SET status = 'INATIVO'
+      SET status = 'INACTIVO'
       WHERE id = $1
       RETURNING *
       `,
@@ -216,7 +216,7 @@ async function excluirProduto(req, res) {
         camposAlterados: {
           status: {
             antes: produtoAtual.status,
-            depois: 'INATIVO',
+            depois: 'INACTIVO',
           },
         },
       });
@@ -249,7 +249,7 @@ async function buscarPorCodigoBarras(req, res) {
       SELECT *
       FROM produtos
       WHERE codigo_barras = $1
-        AND status = 'ATIVO'
+        AND status = 'ACTIVO'
       `,
       [codigo],
     );
@@ -270,7 +270,7 @@ async function atualizarStatusProduto(req, res) {
   const id = Number(req.params.id);
   const status = req.body?.status?.trim?.().toUpperCase();
 
-  const statusValidos = ['ATIVO', 'INATIVO'];
+  const statusValidos = ['ACTIVO', 'INACTIVO'];
 
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({ erro: 'ID inválido' });
@@ -298,7 +298,7 @@ async function atualizarStatusProduto(req, res) {
     return res.status(200).json({
       sucesso: true,
       mensagem:
-        status === 'ATIVO' ? 'Produto ativado com sucesso' : 'Produto desativado com sucesso',
+        status === 'ACTIVO' ? 'Produto ativado com sucesso' : 'Produto desativado com sucesso',
       produto: result.rows[0],
     });
   } catch (err) {

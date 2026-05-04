@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS public.clientes (
     telefone VARCHAR(30),
     cidade VARCHAR(100),
     documento VARCHAR(20),
-    status VARCHAR(20) NOT NULL DEFAULT 'ATIVO',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.produtos (
     categoria VARCHAR(100),
     preco NUMERIC(12,2) NOT NULL DEFAULT 0,
     estoque INTEGER NOT NULL DEFAULT 0,
-    status VARCHAR(20) NOT NULL DEFAULT 'ATIVO',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     foto VARCHAR(255),
     codigo_barras VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -208,7 +208,7 @@ ON public.financeiro_entradas (origem);
 -- =========================================================
 
 INSERT INTO public.clientes (nome, email, telefone, cidade, status)
-SELECT 'Consumidor Final', 'ConsumidorFinal@sistema.local', '', '', 'ATIVO'
+SELECT 'Consumidor Final', 'ConsumidorFinal@sistema.local', '', '', 'ACTIVO'
 WHERE NOT EXISTS (
     SELECT 1
     FROM public.clientes

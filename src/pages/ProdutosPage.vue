@@ -73,7 +73,7 @@
       <template v-slot:body-cell-acoes="props">
         <q-td :props="props" class="text-center">
           <q-btn
-            v-if="props.row.status === 'ATIVO'"
+            v-if="props.row.status === 'ACTIVO'"
             icon="edit"
             size="sm"
             flat
@@ -82,7 +82,7 @@
           />
 
           <q-btn
-            v-if="props.row.status === 'ATIVO'"
+            v-if="props.row.status === 'ACTIVO'"
             icon="delete"
             size="sm"
             flat
@@ -251,9 +251,9 @@ import { Notify, Dialog } from 'quasar';
 const novaQuantidade = ref<number>(0);
 const estoqueOriginal = ref<number>(0);
 
-const filtroStatus = ref('ATIVO');
+const filtroStatus = ref('ACTIVO');
 
-const statusOptions = ['ATIVO', 'INATIVO'];
+const statusOptions = ['ACTIVO', 'INACTIVO'];
 
 interface Produto {
   id?: number;
@@ -528,7 +528,7 @@ async function ativarProduto(id?: number): Promise<void> {
     title: 'Confirmar activación',
     message: '¿Desea activar este produto?',
     ok: {
-      label: 'Ativar',
+      label: 'Activar',
       color: 'positive',
       unelevated: true,
     },
@@ -541,7 +541,7 @@ async function ativarProduto(id?: number): Promise<void> {
   }).onOk(async () => {
     try {
       await axios.patch(`${API_URL}/produtos/${id}/status`, {
-        status: 'ATIVO',
+        status: 'ACTIVO',
       });
 
       Notify.create({

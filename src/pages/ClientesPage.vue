@@ -51,7 +51,7 @@
       <template v-slot:body-cell-acoes="props">
         <q-td :props="props" class="text-center">
           <q-btn
-            v-if="props.row.status === 'ATIVO' && !isConsumidorFinal(props.row)"
+            v-if="props.row.status === 'ACTIVO' && !isConsumidorFinal(props.row)"
             icon="edit"
             size="sm"
             flat
@@ -60,7 +60,7 @@
           />
 
           <q-btn
-            v-if="props.row.status === 'ATIVO' && !isConsumidorFinal(props.row)"
+            v-if="props.row.status === 'ACTIVO' && !isConsumidorFinal(props.row)"
             icon="delete"
             size="sm"
             flat
@@ -156,7 +156,7 @@ import axios from 'axios';
 import { Notify, Dialog } from 'quasar';
 import type { QTableProps } from 'quasar';
 
-type StatusCliente = 'ATIVO' | 'INATIVO';
+type StatusCliente = 'ACTIVO' | 'INACTIVO';
 
 interface Cliente {
   id?: number;
@@ -177,7 +177,7 @@ interface ApiErrorResponse {
 }
 
 const filtroBusca = ref<string>('');
-const filtroStatus = ref<StatusCliente | ''>('ATIVO');
+const filtroStatus = ref<StatusCliente | ''>('ACTIVO');
 
 const clientes = ref<Cliente[]>([]);
 const dialog = ref<boolean>(false);
@@ -196,7 +196,7 @@ const form = ref<Cliente>({
   cidade: '',
 });
 
-const statusOptions: StatusCliente[] = ['ATIVO', 'INATIVO'];
+const statusOptions: StatusCliente[] = ['ACTIVO', 'INACTIVO'];
 
 const columns: QTableProps['columns'] = [
   { name: 'documento', label: 'Documento', field: 'documento', align: 'left' },
@@ -271,9 +271,9 @@ async function ativarCliente(id?: number): Promise<void> {
 
   Dialog.create({
     title: 'Confirmar ativación',
-    message: '¿Deseja ativar este cliente?',
+    message: '¿Deseja activar este cliente?',
     ok: {
-      label: 'Ativar',
+      label: 'Activar',
       color: 'positive',
       unelevated: true,
     },
@@ -286,7 +286,7 @@ async function ativarCliente(id?: number): Promise<void> {
   }).onOk(async () => {
     try {
       await axios.patch(`http://localhost:3000/clientes/${id}/status`, {
-        status: 'ATIVO',
+        status: 'ACTIVO',
       });
 
       Notify.create({
