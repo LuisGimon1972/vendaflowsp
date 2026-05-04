@@ -321,24 +321,46 @@
             </div>
 
             <div class="col-8">
-              <q-input
-                :ref="criarPagamentoRef(index)"
-                v-model.number="pagamento.valor"
-                type="number"
-                min="0"
-                step="0.01"
-                outlined
-                dense
-                class="sem-setas"
-                input-class="text-right"
-                placeholder="0,00"
-                :label="`Valor en ${pagamento.label}`"
-                @update:model-value="onPagamentoChange(index)"
-              >
-                <template #prepend>
-                  <span class="text-blue-7 text-caption">R$</span>
-                </template>
-              </q-input>
+<q-input
+  :ref="criarPagamentoRef(index)"
+  v-model.number="pagamento.valor"
+  type="number"
+  min="0"
+  step="0.01"
+  outlined
+  dense
+  class="sem-setas"
+  input-class="text-right"
+  placeholder="0,00"
+  :label="`Valor en ${pagamento.label}`"
+  :disable="
+    totalPedidoCentavos > 0 &&
+    pagamentos.some((outroPagamento, outroIndex) =>
+      outroIndex !== index &&
+      valorParaCentavos(outroPagamento.valor) >= totalPedidoCentavos
+    )
+  "
+  @update:model-value="
+    () => {
+      onPagamentoChange(index);
+
+      if (
+        totalPedidoCentavos > 0 &&
+        valorParaCentavos(pagamento.valor) >= totalPedidoCentavos
+      ) {
+        pagamentos.forEach((outroPagamento, outroIndex) => {
+          if (outroIndex !== index) {
+            outroPagamento.valor = 0;
+          }
+        });
+      }
+    }
+  "
+>
+  <template #prepend>
+    <span class="text-blue-7 text-caption">R$</span>
+  </template>
+</q-input>
             </div>
           </div>
 
