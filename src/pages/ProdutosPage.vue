@@ -324,7 +324,7 @@ const columns: QTableProps['columns'] = [
   { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
   {
     name: 'preco',
-    label: 'Precio Venta',
+    label: 'Precio de Venta',
     field: 'preco',
     align: 'right',
     format: (val: number | string) => `R$ ${Number(val).toFixed(2)}`,

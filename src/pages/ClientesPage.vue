@@ -104,7 +104,7 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <q-input dense v-model="form.telefone" label="Telefono" mask="(##)#####-####" />
+                <q-input dense v-model="form.telefone" label="Teléfono" mask="(##)#####-####" />
               </div>
 
               <div class="col-12 col-md-6">
@@ -202,7 +202,7 @@ const columns: QTableProps['columns'] = [
   { name: 'documento', label: 'Documento', field: 'documento', align: 'left' },
   { name: 'nome', label: 'Nombre', field: 'nome', align: 'left' },
   { name: 'email', label: 'Email', field: 'email', align: 'left' },
-  { name: 'telefone', label: 'Telefono', field: 'telefone', align: 'left' },
+  { name: 'telefone', label: 'Teléfono', field: 'telefone', align: 'left' },
   { name: 'cidade', label: 'Ciudad', field: 'cidade', align: 'left' },
   { name: 'acoes', label: 'Acciones', field: 'acoes', align: 'center' },
 ];
