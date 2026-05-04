@@ -1155,7 +1155,7 @@ function imprimirComprovantePedido(dados: DadosComprovantePedido): Promise<void>
 async function carregarClientes() {
   const { data } = await api.get<Cliente[]>('/clientes', {
     params: {
-      status: 'ATIVO',
+      status: 'ACTIVO',
     },
   });
 
