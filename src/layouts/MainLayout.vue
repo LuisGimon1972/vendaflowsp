@@ -65,20 +65,20 @@
             <q-icon name="inventory_2" />
           </q-item-section>
           <q-item-section style="font-size: 16px;">Productos</q-item-section>
-        </q-item>
-
-        <q-item clickable to="/pedidos" active-class="menu-active">
-          <q-item-section avatar>
-            <q-icon name="add_shopping_cart" />
-          </q-item-section>
-          <q-item-section style="font-size: 16px;">Crear Pedido</q-item-section>
-        </q-item>
+        </q-item>        
 
         <q-item clickable to="/pedidos/lista" active-class="menu-active">
           <q-item-section avatar>
             <q-icon name="receipt_long" />
           </q-item-section>
           <q-item-section style="font-size: 16px;">Pedidos y Ventas</q-item-section>
+        </q-item>
+
+	<q-item clickable to="/pedidos" active-class="menu-active">
+          <q-item-section avatar>
+            <q-icon name="add_shopping_cart" />
+          </q-item-section>
+          <q-item-section style="font-size: 16px;">Nuevo Pedido</q-item-section>
         </q-item>
 
         <q-item clickable to="/pdv" active-class="menu-active">

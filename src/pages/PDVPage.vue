@@ -4,7 +4,7 @@
       <div class="col-12 col-md-8">
         <q-card flat bordered class="q-mb-md border">
           <q-card-section>
-            <div class="text-h5">Punto de Venta</div>
+            <div class="text-h5">Terminal Punto de Venta</div>
             <div class="text-caption text-grey-7">
               Venta rápida con selección de cliente y control automático de estoque
             </div>
