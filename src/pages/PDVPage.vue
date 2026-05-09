@@ -241,14 +241,14 @@
             </div>
 
             <div class="row justify-between q-mb-sm">
-              <span class="text-grey-7">
+              <span class="text-grey-7 subir">
                 Descuento
                 <small v-if="descontoTipo === 'percentual'"> ({{ descontoValor }}%) </small>
               </span>
-              <strong>{{ formatarMoeda(descontoCalculado) }}</strong>
+              <strong class="subir">{{ formatarMoeda(descontoCalculado) }}</strong>
             </div>
 
-            <div class="row justify-between q-mb-sm">
+            <div class="row justify-between q-mb-sm subir">
               <span class="text-grey-7">
                 Recargo
                 <small v-if="acrescimoTipo === 'percentual'"> ({{ acrescimoValor }}%) </small>
@@ -256,17 +256,17 @@
               <strong>{{ formatarMoeda(acrescimoCalculado) }}</strong>
             </div>
 
-            <div class="row justify-between q-mb-sm">
+            <div class="row justify-between q-mb-sm subir">
               <span class="text-grey-7">Base imponible</span>
               <strong>{{ formatarMoeda(baseImponible) }}</strong>
             </div>
 
-            <div class="row justify-between q-mb-sm">
+            <div class="row justify-between q-mb-sm subir">
               <span class="text-grey-7">Exento / Exonerado</span>
               <strong>{{ formatarMoeda(subtotalExentoAjustado) }}</strong>
             </div>
 
-            <div class="row justify-between q-mb-sm">
+            <div class="row justify-between q-mb-sm subir">
               <span class="text-grey-7">IVA 16%</span>
               <strong>{{ formatarMoeda(ivaCalculado) }}</strong>
             </div>
@@ -1520,5 +1520,9 @@ onMounted(async () => {
 :deep(.sem-setas input[type='number']) {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+.subir {
+  margin-top: -7px;
 }
 </style>
