@@ -157,6 +157,24 @@ ADD COLUMN IF NOT EXISTS endereco VARCHAR(255),
 ADD COLUMN IF NOT EXISTS bairro VARCHAR(100),
 ADD COLUMN IF NOT EXISTS numero VARCHAR(20);
 
+ALTER TABLE public.produtos
+ADD COLUMN IF NOT EXISTS tipo_imposto VARCHAR(20) NOT NULL DEFAULT 'GRAVADO',
+ADD COLUMN IF NOT EXISTS aliquota_iva NUMERIC(5,2) NOT NULL DEFAULT 16.00;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'produtos_tipo_imposto_check'
+      AND conrelid = 'public.produtos'::regclass
+  ) THEN
+    ALTER TABLE public.produtos
+    ADD CONSTRAINT produtos_tipo_imposto_check
+    CHECK (tipo_imposto IN ('GRAVADO', 'EXENTO', 'EXONERADO'));
+  END IF;
+END $$;
+
 
 -- =========================================================
 -- 4. ÍNDICES

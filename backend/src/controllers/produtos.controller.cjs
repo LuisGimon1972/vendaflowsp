@@ -61,7 +61,17 @@ async function buscarProduto(req, res) {
 }
 
 async function criarProduto(req, res) {
-  const { nome, categoria, preco, estoque, status, foto, codigo_barras } = req.body;
+  const {
+    nome,
+    categoria,
+    preco,
+    estoque,
+    status,
+    foto,
+    codigo_barras,
+    tipo_imposto,
+    aliquota_iva,
+  } = req.body;
 
   if (!nome) {
     return res.status(400).json({
@@ -69,11 +79,34 @@ async function criarProduto(req, res) {
     });
   }
 
+  const impostoCategoria = obterImpostoPorCategoria(categoria);
+
+  const tipoImpostoFinal = tipo_imposto || impostoCategoria.tipo_imposto;
+
+  if (!['GRAVADO', 'EXENTO', 'EXONERADO'].includes(tipoImpostoFinal)) {
+    return res.status(400).json({
+      erro: 'Tipo de imposto inválido',
+    });
+  }
+
+  const aliquotaIvaFinal =
+    tipoImpostoFinal === 'GRAVADO' ? Number(aliquota_iva ?? impostoCategoria.aliquota_iva) : 0;
+
   try {
     const result = await pool.query(
       `
-      INSERT INTO produtos (nome, categoria, preco, estoque, status, foto, codigo_barras)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO produtos (
+        nome,
+        categoria,
+        preco,
+        estoque,
+        status,
+        foto,
+        codigo_barras,
+        tipo_imposto,
+        aliquota_iva
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
       `,
       [
@@ -84,6 +117,8 @@ async function criarProduto(req, res) {
         status || 'ACTIVO',
         foto || null,
         codigo_barras || null,
+        tipoImpostoFinal,
+        aliquotaIvaFinal,
       ],
     );
 
@@ -98,11 +133,41 @@ async function criarProduto(req, res) {
 
 async function atualizarProduto(req, res) {
   const { id } = req.params;
-  const { nome, categoria, preco, estoque, status, foto, codigo_barras } = req.body;
+
+  const {
+    nome,
+    categoria,
+    preco,
+    estoque,
+    status,
+    foto,
+    codigo_barras,
+    tipo_imposto,
+    aliquota_iva,
+  } = req.body;
 
   if (!nome?.trim()) {
     return res.status(400).json({
       erro: 'Nome é obrigatório',
+    });
+  }
+
+  const impostoCategoria = obterImpostoPorCategoria(categoria);
+
+  const tipoImpostoFinal = tipo_imposto || impostoCategoria.tipo_imposto;
+
+  if (!['GRAVADO', 'EXENTO', 'EXONERADO'].includes(tipoImpostoFinal)) {
+    return res.status(400).json({
+      erro: 'Tipo de imposto inválido',
+    });
+  }
+
+  const aliquotaIvaFinal =
+    tipoImpostoFinal === 'GRAVADO' ? Number(aliquota_iva ?? impostoCategoria.aliquota_iva) : 0;
+
+  if (Number.isNaN(aliquotaIvaFinal) || aliquotaIvaFinal < 0) {
+    return res.status(400).json({
+      erro: 'Alíquota de IVA inválida',
     });
   }
 
@@ -135,8 +200,10 @@ async function atualizarProduto(req, res) {
         estoque = $4,
         status = $5,
         foto = $6,
-        codigo_barras = $7
-      WHERE id = $8
+        codigo_barras = $7,
+        tipo_imposto = $8,
+        aliquota_iva = $9
+      WHERE id = $10
       RETURNING *
       `,
       [
@@ -147,6 +214,8 @@ async function atualizarProduto(req, res) {
         status ?? 'ACTIVO',
         foto ?? null,
         codigo_barras ?? null,
+        tipoImpostoFinal,
+        aliquotaIvaFinal,
         id,
       ],
     );
@@ -165,6 +234,35 @@ async function atualizarProduto(req, res) {
       detalhe: err.message,
     });
   }
+}
+
+function obterImpostoPorCategoria(categoria) {
+  const categoriaNormalizada = String(categoria || '').trim();
+
+  const impostosPorCategoria = {
+    Electrónicos: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Ropa: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Alimentos: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Bebidas: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Limpieza: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Higiene: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Calzado: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Accesorios: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    'Casa y Cocina': { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Papelería: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Herramientas: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Juguetes: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    'Pet Shop': { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Farmacia: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    Otros: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+  };
+
+  return (
+    impostosPorCategoria[categoriaNormalizada] || {
+      tipo_imposto: 'GRAVADO',
+      aliquota_iva: 16,
+    }
+  );
 }
 
 async function excluirProduto(req, res) {

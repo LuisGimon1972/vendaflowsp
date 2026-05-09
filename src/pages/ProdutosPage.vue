@@ -255,6 +255,8 @@ const filtroStatus = ref('ACTIVO');
 
 const statusOptions = ['ACTIVO', 'INACTIVO'];
 
+type TipoImposto = 'GRAVADO' | 'EXENTO' | 'EXONERADO';
+
 interface Produto {
   id?: number;
   nome: string;
@@ -263,6 +265,8 @@ interface Produto {
   estoque: number;
   foto: string;
   codigo_barras: string;
+  tipo_imposto: TipoImposto;
+  aliquota_iva: number;
 }
 
 interface ProdutoForm {
@@ -273,6 +277,8 @@ interface ProdutoForm {
   estoque: number;
   foto: string;
   codigo_barras: string;
+  tipo_imposto: TipoImposto;
+  aliquota_iva: number;
 }
 
 const API_URL = 'http://localhost:3000';
@@ -293,7 +299,42 @@ const form = ref<ProdutoForm>({
   estoque: 0,
   foto: '',
   codigo_barras: '',
+  tipo_imposto: 'GRAVADO',
+  aliquota_iva: 16,
 });
+
+function obterImpostoPorCategoria(categoria: string): {
+  tipo_imposto: TipoImposto;
+  aliquota_iva: number;
+} {
+  const impostosPorCategoria: Record<string, { tipo_imposto: TipoImposto; aliquota_iva: number }> =
+    {
+      Electrónicos: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Ropa: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+
+      Alimentos: { tipo_imposto: 'EXENTO', aliquota_iva: 0 },
+      Farmacia: { tipo_imposto: 'EXENTO', aliquota_iva: 0 },
+
+      Bebidas: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Limpieza: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Higiene: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Calzado: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Accesorios: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      'Casa y Cocina': { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Papelería: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Herramientas: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Juguetes: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      'Pet Shop': { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+      Otros: { tipo_imposto: 'GRAVADO', aliquota_iva: 16 },
+    };
+
+  return (
+    impostosPorCategoria[categoria] || {
+      tipo_imposto: 'GRAVADO',
+      aliquota_iva: 16,
+    }
+  );
+}
 
 const filtroBusca = ref<string>('');
 const filtroCategoria = ref<string>('');
@@ -315,6 +356,12 @@ const categoriasOptions = ref<string[]>([
   'Farmacia',
   'Otros',
 ]);
+
+const tipoImpostoOptions = [
+  { label: 'Gravado IVA 16%', value: 'GRAVADO' },
+  { label: 'Exento IVA 0%', value: 'EXENTO' },
+  { label: 'Exonerado IVA 0%', value: 'EXONERADO' },
+];
 
 const columns: QTableProps['columns'] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left' },
@@ -345,6 +392,16 @@ watch(fotoArquivo, (file) => {
   }
 });
 
+watch(
+  () => form.value.categoria,
+  (categoria) => {
+    const imposto = obterImpostoPorCategoria(categoria);
+
+    form.value.tipo_imposto = imposto.tipo_imposto;
+    form.value.aliquota_iva = imposto.aliquota_iva;
+  },
+);
+
 async function carregarProdutos(): Promise<void> {
   const { data } = await axios.get<Produto[]>(`${API_URL}/produtos`, {
     params: {
@@ -365,6 +422,8 @@ function resetFormulario(): void {
     estoque: 0,
     foto: '',
     codigo_barras: '',
+    tipo_imposto: 'GRAVADO',
+    aliquota_iva: 16,
   };
 
   estoqueOriginal.value = 0;
@@ -401,6 +460,8 @@ function editarProduto(produto: Produto): void {
     categoria: produto.categoria ?? '',
     foto: produto.foto ?? '',
     codigo_barras: produto.codigo_barras ?? '',
+    tipo_imposto: produto.tipo_imposto ?? 'GRAVADO',
+    aliquota_iva: Number(produto.aliquota_iva ?? 16),
   };
 
   estoqueOriginal.value = Number(produto.estoque || 0);
@@ -454,11 +515,15 @@ async function salvarProduto(): Promise<void> {
   try {
     const fotoUrl = await uploadFoto();
 
+    const imposto = obterImpostoPorCategoria(form.value.categoria);
+
     const payload = {
       ...form.value,
       estoque: form.value.estoque,
       codigo_barras: form.value.codigo_barras?.trim() || null,
       foto: fotoUrl,
+      tipo_imposto: imposto.tipo_imposto,
+      aliquota_iva: imposto.aliquota_iva,
     };
 
     if (editando.value && produtoId.value !== null) {

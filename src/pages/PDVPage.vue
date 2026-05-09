@@ -256,6 +256,21 @@
               <strong>{{ formatarMoeda(acrescimoCalculado) }}</strong>
             </div>
 
+            <div class="row justify-between q-mb-sm">
+              <span class="text-grey-7">Base imponible</span>
+              <strong>{{ formatarMoeda(baseImponible) }}</strong>
+            </div>
+
+            <div class="row justify-between q-mb-sm">
+              <span class="text-grey-7">Exento / Exonerado</span>
+              <strong>{{ formatarMoeda(subtotalExentoAjustado) }}</strong>
+            </div>
+
+            <div class="row justify-between q-mb-sm">
+              <span class="text-grey-7">IVA 16%</span>
+              <strong>{{ formatarMoeda(ivaCalculado) }}</strong>
+            </div>
+
             <div class="row justify-between q-mb-md">
               <span class="text-grey-7">Total</span>
               <strong class="text-primary text-h5">
@@ -294,50 +309,68 @@
                     </div>
 
                     <div class="col-8">
-<q-input
-  :ref="criarPagamentoRef(index)"
-  v-model.number="pagamento.valor"
-  type="number"
-  min="0"
-  step="0.01"
-  outlined
-  dense
-  class="sem-setas"
-  input-class="text-right"
-  placeholder="0,00"
-  :label="`Valor en ${pagamento.label}`"
-  :disable="
-    Number(totalVenda || 0) > 0 &&
-    pagamentos.some((outroPagamento, outroIndex) =>
-      outroIndex !== index &&
-      round2(Number(outroPagamento.valor || 0)) >= round2(Number(totalVenda || 0))
-    )
-  "
-  @update:model-value="
-    () => {
-      onPagamentoChange(index);
+                      <q-input
+                        :ref="criarPagamentoRef(index)"
+                        v-model.number="pagamento.valor"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        outlined
+                        dense
+                        class="sem-setas"
+                        input-class="text-right"
+                        placeholder="0,00"
+                        :label="`Valor en ${pagamento.label}`"
+                        :disable="
+                          Number(totalVenda || 0) > 0 &&
+                          pagamentos.some(
+                            (outroPagamento, outroIndex) =>
+                              outroIndex !== index &&
+                              round2(Number(outroPagamento.valor || 0)) >=
+                                round2(Number(totalVenda || 0)),
+                          )
+                        "
+                        @update:model-value="
+                          () => {
+                            onPagamentoChange(index);
 
-      if (
-        Number(totalVenda || 0) > 0 &&
-        round2(Number(pagamento.valor || 0)) >= round2(Number(totalVenda || 0))
-      ) {
-        pagamentos.forEach((outroPagamento, outroIndex) => {
-          if (outroIndex !== index) {
-            outroPagamento.valor = 0;
-          }
-        });
-      }
-    }
-  "
->
-  <template #prepend>
-    <span class="text-blue-7 text-caption">R$</span>
-  </template>
-</q-input>
+                            if (
+                              Number(totalVenda || 0) > 0 &&
+                              round2(Number(pagamento.valor || 0)) >=
+                                round2(Number(totalVenda || 0))
+                            ) {
+                              pagamentos.forEach((outroPagamento, outroIndex) => {
+                                if (outroIndex !== index) {
+                                  outroPagamento.valor = 0;
+                                }
+                              });
+                            }
+                          }
+                        "
+                      >
+                        <template #prepend>
+                          <span class="text-blue-7 text-caption">R$</span>
+                        </template>
+                      </q-input>
                     </div>
                   </div>
 
                   <q-separator class="q-my-md" />
+
+                  <div class="row justify-between q-mb-sm">
+                    <span class="text-grey-7">Base imponible</span>
+                    <strong>{{ formatarMoeda(baseImponible) }}</strong>
+                  </div>
+
+                  <div class="row justify-between q-mb-sm">
+                    <span class="text-grey-7">Exento / Exonerado</span>
+                    <strong>{{ formatarMoeda(subtotalExentoAjustado) }}</strong>
+                  </div>
+
+                  <div class="row justify-between q-mb-sm">
+                    <span class="text-grey-7">IVA 16%</span>
+                    <strong>{{ formatarMoeda(ivaCalculado) }}</strong>
+                  </div>
 
                   <div class="row justify-between q-mb-sm">
                     <span class="text-grey-7">Total</span>
@@ -400,6 +433,7 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3000';
 
 type TipoAjuste = 'valor' | 'percentual';
+type TipoImposto = 'GRAVADO' | 'EXENTO' | 'EXONERADO';
 type FormaPagamento = 'EFECTIVO' | 'TARJETA' | 'PAGOMOVIL';
 type FormaPagamentoResumo = FormaPagamento | 'COMBINADO';
 
@@ -421,6 +455,8 @@ interface Produto {
   status?: string;
   foto: string;
   codigo_barras?: string;
+  tipo_imposto?: TipoImposto;
+  aliquota_iva?: number;
 }
 
 interface OptionItem {
@@ -436,6 +472,8 @@ interface ItemCarrinho {
   subtotal: number;
   estoqueDisponivel: number;
   foto: string;
+  tipo_imposto: TipoImposto;
+  aliquota_iva: number;
 }
 
 interface PagamentoInformado {
@@ -452,6 +490,9 @@ interface DadosComprovanteVenda {
   subtotal: number;
   desconto: number;
   acrescimo: number;
+  baseImponible: number;
+  subtotalExento: number;
+  iva: number;
   total: number;
   totalPago: number;
   troco: number;
@@ -607,9 +648,62 @@ const acrescimoCalculado = computed(() => {
   return Number(acrescimoValor.value || 0);
 });
 
-const totalVenda = computed(() =>
-  Math.max(0, subtotalVenda.value - descontoCalculado.value + acrescimoCalculado.value),
-);
+function itemGravadoComIva(item: ItemCarrinho): boolean {
+  return item.tipo_imposto === 'GRAVADO' && Number(item.aliquota_iva || 0) > 0;
+}
+
+const subtotalGravadoVenda = computed(() => {
+  return round2(
+    carrinho.value
+      .filter((item) => itemGravadoComIva(item))
+      .reduce((acc, item) => acc + item.subtotal, 0),
+  );
+});
+
+const subtotalExentoVenda = computed(() => {
+  return round2(
+    carrinho.value
+      .filter((item) => !itemGravadoComIva(item))
+      .reduce((acc, item) => acc + item.subtotal, 0),
+  );
+});
+
+const totalAntesImposto = computed(() => {
+  return round2(
+    Math.max(0, subtotalVenda.value - descontoCalculado.value + acrescimoCalculado.value),
+  );
+});
+
+const fatorAjusteVenda = computed(() => {
+  if (subtotalVenda.value <= 0) return 0;
+
+  return totalAntesImposto.value / subtotalVenda.value;
+});
+
+const baseImponible = computed(() => {
+  return round2(subtotalGravadoVenda.value * fatorAjusteVenda.value);
+});
+
+const subtotalExentoAjustado = computed(() => {
+  return round2(subtotalExentoVenda.value * fatorAjusteVenda.value);
+});
+
+const ivaCalculado = computed(() => {
+  const totalIva = carrinho.value.reduce((acc, item) => {
+    if (!itemGravadoComIva(item)) return acc;
+
+    const baseItemAjustada = item.subtotal * fatorAjusteVenda.value;
+    const aliquota = Number(item.aliquota_iva || 0) / 100;
+
+    return acc + baseItemAjustada * aliquota;
+  }, 0);
+
+  return round2(totalIva);
+});
+
+const totalVenda = computed(() => {
+  return round2(totalAntesImposto.value + ivaCalculado.value);
+});
 
 function formatarMoeda(valor: number): string {
   return new Intl.NumberFormat('pt-BR', {
@@ -799,6 +893,21 @@ function gerarHtmlComprovanteVenda(dados: DadosComprovanteVenda): string {
             <span>Recargo</span>
             <span>${formatarMoeda(dados.acrescimo)}</span>
           </div>
+
+          <div class="linha">
+  <span>Base imponible</span>
+  <span>${formatarMoeda(dados.baseImponible)}</span>
+</div>
+
+<div class="linha">
+  <span>Exento / Exonerado</span>
+  <span>${formatarMoeda(dados.subtotalExento)}</span>
+</div>
+
+<div class="linha">
+  <span>IVA 16%</span>
+  <span>${formatarMoeda(dados.iva)}</span>
+</div>
 
           <div class="linha total">
             <span>Total</span>
@@ -997,6 +1106,8 @@ function adicionarProduto(produto: Produto) {
       subtotal: Number(produto.preco),
       foto: produto.foto,
       estoqueDisponivel: Number(produto.estoque),
+      tipo_imposto: produto.tipo_imposto || 'GRAVADO',
+      aliquota_iva: Number(produto.aliquota_iva ?? 16),
     });
 
     tocarBeep();
@@ -1060,13 +1171,10 @@ function onPagamentoChange(indexEditado: number) {
     return;
   }
 
-  // Efectivo puede exceder, porque genera cambio.
-  // No se altera Tarjeta ni Pago Móvil cuando cambia Efectivo.
   if (pagamento.forma === 'EFECTIVO') {
     return;
   }
 
-  // Solo limita cuando el usuario está editando Tarjeta o Pago Móvil.
   if (isFormaSemTroco(pagamento.forma)) {
     validarLimiteFormaSemTroco(indexEditado);
   }
@@ -1217,6 +1325,11 @@ async function finalizarVenda() {
   const subtotalComprovante = Number(subtotalVenda.value || 0);
   const descontoComprovante = Number(descontoCalculado.value || 0);
   const acrescimoComprovante = Number(acrescimoCalculado.value || 0);
+
+  const baseImponibleComprovante = Number(baseImponible.value || 0);
+  const subtotalExentoComprovante = Number(subtotalExentoAjustado.value || 0);
+  const ivaComprovante = Number(ivaCalculado.value || 0);
+
   const totalComprovante = totalVendaAtual;
   const dataVendaComprovante = new Date();
 
@@ -1273,6 +1386,9 @@ async function finalizarVenda() {
         subtotal: subtotalComprovante,
         desconto: descontoComprovante,
         acrescimo: acrescimoComprovante,
+        baseImponible: baseImponibleComprovante,
+        subtotalExento: subtotalExentoComprovante,
+        iva: ivaComprovante,
         total: totalComprovante,
         totalPago: totalPagoComprovante,
         troco: trocoComprovante,

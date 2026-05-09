@@ -267,6 +267,21 @@
               <strong>{{ formatarMoeda(acrescimoCalculado) }}</strong>
             </div>
 
+            <div class="row justify-between q-mb-sm">
+              <span class="text-grey-7">Base imponible</span>
+              <strong>{{ formatarMoeda(baseImponible) }}</strong>
+            </div>
+
+            <div class="row justify-between q-mb-sm">
+              <span class="text-grey-7">Exento / Exonerado</span>
+              <strong>{{ formatarMoeda(subtotalExentoAjustado) }}</strong>
+            </div>
+
+            <div class="row justify-between q-mb-sm">
+              <span class="text-grey-7">IVA 16%</span>
+              <strong>{{ formatarMoeda(ivaCalculado) }}</strong>
+            </div>
+
             <div class="row justify-between q-mb-md">
               <span class="text-grey-7">Total</span>
               <strong class="text-primary text-h6">
@@ -321,50 +336,66 @@
             </div>
 
             <div class="col-8">
-<q-input
-  :ref="criarPagamentoRef(index)"
-  v-model.number="pagamento.valor"
-  type="number"
-  min="0"
-  step="0.01"
-  outlined
-  dense
-  class="sem-setas"
-  input-class="text-right"
-  placeholder="0,00"
-  :label="`Valor en ${pagamento.label}`"
-  :disable="
-    totalPedidoCentavos > 0 &&
-    pagamentos.some((outroPagamento, outroIndex) =>
-      outroIndex !== index &&
-      valorParaCentavos(outroPagamento.valor) >= totalPedidoCentavos
-    )
-  "
-  @update:model-value="
-    () => {
-      onPagamentoChange(index);
+              <q-input
+                :ref="criarPagamentoRef(index)"
+                v-model.number="pagamento.valor"
+                type="number"
+                min="0"
+                step="0.01"
+                outlined
+                dense
+                class="sem-setas"
+                input-class="text-right"
+                placeholder="0,00"
+                :label="`Valor en ${pagamento.label}`"
+                :disable="
+                  totalPedidoCentavos > 0 &&
+                  pagamentos.some(
+                    (outroPagamento, outroIndex) =>
+                      outroIndex !== index &&
+                      valorParaCentavos(outroPagamento.valor) >= totalPedidoCentavos,
+                  )
+                "
+                @update:model-value="
+                  () => {
+                    onPagamentoChange(index);
 
-      if (
-        totalPedidoCentavos > 0 &&
-        valorParaCentavos(pagamento.valor) >= totalPedidoCentavos
-      ) {
-        pagamentos.forEach((outroPagamento, outroIndex) => {
-          if (outroIndex !== index) {
-            outroPagamento.valor = 0;
-          }
-        });
-      }
-    }
-  "
->
-  <template #prepend>
-    <span class="text-blue-7 text-caption">R$</span>
-  </template>
-</q-input>
+                    if (
+                      totalPedidoCentavos > 0 &&
+                      valorParaCentavos(pagamento.valor) >= totalPedidoCentavos
+                    ) {
+                      pagamentos.forEach((outroPagamento, outroIndex) => {
+                        if (outroIndex !== index) {
+                          outroPagamento.valor = 0;
+                        }
+                      });
+                    }
+                  }
+                "
+              >
+                <template #prepend>
+                  <span class="text-blue-7 text-caption">R$</span>
+                </template>
+              </q-input>
             </div>
           </div>
 
           <q-separator class="q-my-md" />
+
+          <div class="row justify-between q-mb-sm">
+            <span class="text-grey-7">Base imponible</span>
+            <strong>{{ formatarMoeda(baseImponible) }}</strong>
+          </div>
+
+          <div class="row justify-between q-mb-sm">
+            <span class="text-grey-7">Exento / Exonerado</span>
+            <strong>{{ formatarMoeda(subtotalExentoAjustado) }}</strong>
+          </div>
+
+          <div class="row justify-between q-mb-sm">
+            <span class="text-grey-7">IVA 16%</span>
+            <strong>{{ formatarMoeda(ivaCalculado) }}</strong>
+          </div>
 
           <div class="row justify-between q-mb-sm">
             <span class="text-grey-7">Total</span>
@@ -427,6 +458,7 @@ const router = useRouter();
 const API_URL = 'http://localhost:3000';
 
 type TipoAjuste = 'valor' | 'percentual';
+type TipoImposto = 'GRAVADO' | 'EXENTO' | 'EXONERADO';
 type FormaPagamento = 'EFECTIVO' | 'TARJETA' | 'PAGOMOVIL';
 type FormaPagamentoResumo = FormaPagamento | 'COMBINADO';
 
@@ -448,6 +480,8 @@ interface Produto {
   estoque: number | string;
   status?: string;
   codigo_barras?: string;
+  tipo_imposto?: TipoImposto;
+  aliquota_iva?: number | string;
 }
 
 interface ItemPedido {
@@ -456,6 +490,8 @@ interface ItemPedido {
   preco: number;
   quantidade: number;
   subtotal: number;
+  tipo_imposto: TipoImposto;
+  aliquota_iva: number;
 }
 
 interface OptionItem {
@@ -498,6 +534,8 @@ interface PedidoDetalhe {
     preco_unitario: number;
     quantidade: number;
     subtotal: number;
+    tipo_imposto?: TipoImposto;
+    aliquota_iva?: number | string;
   }[];
 }
 
@@ -510,6 +548,9 @@ interface DadosComprovantePedido {
   subtotal: number;
   desconto: number;
   acrescimo: number;
+  baseImponible: number;
+  subtotalExento: number;
+  iva: number;
   total: number;
   totalPago: number;
   troco: number;
@@ -697,10 +738,32 @@ function isFormaSemTroco(forma?: string): boolean {
   return ['PAGOMOVIL', 'TARJETA'].includes(normalizarTexto(forma));
 }
 
+function itemGravadoComIva(item: ItemPedido): boolean {
+  return item.tipo_imposto === 'GRAVADO' && Number(item.aliquota_iva || 0) > 0;
+}
+
 const subtotalPedidoCentavos = computed(() => {
   return itens.value.reduce((acc, item) => {
     return acc + valorPositivoEmCentavos(item.preco) * Number(item.quantidade || 0);
   }, 0);
+});
+
+const subtotalGravadoPedidoCentavos = computed(() => {
+  return itens.value
+    .filter((item) => itemGravadoComIva(item))
+    .reduce(
+      (acc, item) => acc + valorPositivoEmCentavos(item.preco) * Number(item.quantidade || 0),
+      0,
+    );
+});
+
+const subtotalExentoPedidoCentavos = computed(() => {
+  return itens.value
+    .filter((item) => !itemGravadoComIva(item))
+    .reduce(
+      (acc, item) => acc + valorPositivoEmCentavos(item.preco) * Number(item.quantidade || 0),
+      0,
+    );
 });
 
 const descontoCalculadoCentavos = computed(() => {
@@ -721,13 +784,49 @@ const acrescimoCalculadoCentavos = computed(() => {
   );
 });
 
-const totalPedidoCentavos = computed(() => {
+const totalAntesImpostoCentavos = computed(() => {
   return Math.max(
     0,
     subtotalPedidoCentavos.value -
       descontoCalculadoCentavos.value +
       acrescimoCalculadoCentavos.value,
   );
+});
+
+const fatorAjustePedido = computed(() => {
+  if (subtotalPedidoCentavos.value <= 0) {
+    return 0;
+  }
+
+  return totalAntesImpostoCentavos.value / subtotalPedidoCentavos.value;
+});
+
+const baseImponibleCentavos = computed(() => {
+  return Math.round(subtotalGravadoPedidoCentavos.value * fatorAjustePedido.value);
+});
+
+const subtotalExentoAjustadoCentavos = computed(() => {
+  return Math.round(subtotalExentoPedidoCentavos.value * fatorAjustePedido.value);
+});
+
+const ivaCalculadoCentavos = computed(() => {
+  const totalIva = itens.value.reduce((acc, item) => {
+    if (!itemGravadoComIva(item)) {
+      return acc;
+    }
+
+    const baseItemCentavos = valorPositivoEmCentavos(item.preco) * Number(item.quantidade || 0);
+    const baseItemAjustadaCentavos = baseItemCentavos * fatorAjustePedido.value;
+    const aliquota = Number(item.aliquota_iva || 0) / 100;
+
+    return acc + baseItemAjustadaCentavos * aliquota;
+  }, 0);
+
+  return Math.round(totalIva);
+});
+
+const totalPedidoCentavos = computed(() => {
+  return totalAntesImpostoCentavos.value + ivaCalculadoCentavos.value;
 });
 
 const totalInformadoCentavos = computed(() => {
@@ -837,6 +936,18 @@ const descontoCalculado = computed(() => {
 
 const acrescimoCalculado = computed(() => {
   return centavosParaValor(acrescimoCalculadoCentavos.value);
+});
+
+const baseImponible = computed(() => {
+  return centavosParaValor(baseImponibleCentavos.value);
+});
+
+const subtotalExentoAjustado = computed(() => {
+  return centavosParaValor(subtotalExentoAjustadoCentavos.value);
+});
+
+const ivaCalculado = computed(() => {
+  return centavosParaValor(ivaCalculadoCentavos.value);
 });
 
 const totalPedido = computed(() => {
@@ -1073,6 +1184,21 @@ function gerarHtmlComprovantePedido(dados: DadosComprovantePedido): string {
         <strong>${escapeHtml(formatarMoeda(dados.acrescimo))}</strong>
       </div>
 
+      <div class="linha">
+        <span>Base imponible</span>
+        <strong>${escapeHtml(formatarMoeda(dados.baseImponible))}</strong>
+      </div>
+
+      <div class="linha">
+        <span>Exento / Exonerado</span>
+        <strong>${escapeHtml(formatarMoeda(dados.subtotalExento))}</strong>
+      </div>
+
+      <div class="linha">
+        <span>IVA 16%</span>
+        <strong>${escapeHtml(formatarMoeda(dados.iva))}</strong>
+      </div>
+
       <div class="linha total">
         <span>Total</span>
         <strong>${escapeHtml(formatarMoeda(dados.total))}</strong>
@@ -1262,6 +1388,8 @@ function adicionarItem() {
       preco: precoProduto,
       quantidade: quantidade.value,
       subtotal: calcularSubtotalItem(precoProduto, quantidade.value),
+      tipo_imposto: produto.tipo_imposto || 'GRAVADO',
+      aliquota_iva: Number(produto.aliquota_iva ?? 16),
     });
   }
 
@@ -1300,6 +1428,10 @@ async function salvarPedido() {
 
       desconto: centavosParaValor(descontoCalculadoCentavos.value),
       acrescimo: centavosParaValor(acrescimoCalculadoCentavos.value),
+      base_imponible: centavosParaValor(baseImponibleCentavos.value),
+      subtotal_exento: centavosParaValor(subtotalExentoAjustadoCentavos.value),
+      iva: centavosParaValor(ivaCalculadoCentavos.value),
+      total: centavosParaValor(totalPedidoCentavos.value),
 
       desconto_tipo: descontoTipo.value,
       desconto_valor:
@@ -1376,7 +1508,7 @@ function validarPagamentosFaturamento(): boolean {
     Notify.create({
       type: 'warning',
       message: `Tarjeta y PagoMovil no pueden superar el total del pedido: ${formatarMoeda(
-        totalPedido,
+        totalPedido.value,
       )}.`,
     });
     return false;
@@ -1479,6 +1611,9 @@ async function salvarPedidoComPagamento() {
   const subtotalComprovante = centavosParaValor(subtotalPedidoCentavos.value);
   const descontoComprovante = centavosParaValor(descontoCalculadoCentavos.value);
   const acrescimoComprovante = centavosParaValor(acrescimoCalculadoCentavos.value);
+  const baseImponibleComprovante = centavosParaValor(baseImponibleCentavos.value);
+  const subtotalExentoComprovante = centavosParaValor(subtotalExentoAjustadoCentavos.value);
+  const ivaComprovante = centavosParaValor(ivaCalculadoCentavos.value);
   const totalComprovante = centavosParaValor(totalPedidoCentavos.value);
   const totalPagoComprovante = centavosParaValor(totalPagoConsideradoCentavos.value);
   const trocoComprovante = centavosParaValor(trocoCalculadoCentavos);
@@ -1497,6 +1632,10 @@ async function salvarPedidoComPagamento() {
 
       desconto: descontoComprovante,
       acrescimo: acrescimoComprovante,
+      base_imponible: baseImponibleComprovante,
+      subtotal_exento: subtotalExentoComprovante,
+      iva: ivaComprovante,
+      total: totalComprovante,
 
       desconto_tipo: descontoTipo.value,
       desconto_valor:
@@ -1554,6 +1693,9 @@ async function salvarPedidoComPagamento() {
         subtotal: subtotalComprovante,
         desconto: descontoComprovante,
         acrescimo: acrescimoComprovante,
+        baseImponible: baseImponibleComprovante,
+        subtotalExento: subtotalExentoComprovante,
+        iva: ivaComprovante,
         total: totalComprovante,
         totalPago: totalPagoComprovante,
         troco: trocoComprovante,
@@ -1626,6 +1768,7 @@ async function carregarPedidoEdicao() {
     itens.value = data.itens.map((item) => {
       const preco = centavosParaValor(valorPositivoEmCentavos(item.preco_unitario));
       const qtd = Number(item.quantidade || 0);
+      const produtoCadastro = produtos.value.find((produto) => produto.id === item.produto_id);
 
       return {
         produto_id: item.produto_id,
@@ -1633,6 +1776,8 @@ async function carregarPedidoEdicao() {
         preco,
         quantidade: qtd,
         subtotal: calcularSubtotalItem(preco, qtd),
+        tipo_imposto: item.tipo_imposto || produtoCadastro?.tipo_imposto || 'GRAVADO',
+        aliquota_iva: Number(item.aliquota_iva ?? produtoCadastro?.aliquota_iva ?? 16),
       };
     });
   } catch (error: unknown) {
