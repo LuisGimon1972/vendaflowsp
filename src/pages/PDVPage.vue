@@ -412,6 +412,7 @@
                     icon="check"
                     label="Confirmar"
                     :loading="finalizando"
+                    :disable="!validartarjeta"
                     @click="finalizarVenda"
                   />
                 </q-card-actions>
@@ -499,6 +500,7 @@ interface DadosComprovanteVenda {
 }
 
 const busca = ref('');
+const validartarjeta = ref(true);
 const finalizando = ref(false);
 const inputBusca = ref();
 
@@ -1208,6 +1210,9 @@ function validarLimiteFormaSemTroco(indexEditado: number) {
       type: 'warning',
       message: `El monto de ${pagamento.label} no puede ser mayor al faltante de ${formatarMoeda(limite)}.`,
     });
+    validartarjeta.value = false;
+  } else {
+    validartarjeta.value = true;
   }
 }
 

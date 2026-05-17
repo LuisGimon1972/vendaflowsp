@@ -437,6 +437,7 @@
             icon="check"
             label="Confirmar"
             :loading="salvando"
+            :disable="!validartarjeta"
             @click="salvarPedidoComPagamento"
           />
         </q-card-actions>
@@ -571,6 +572,7 @@ const origemPedido = ref<'PEDIDO' | 'TPV'>('PEDIDO');
 
 const salvando = ref(false);
 const finalizando = ref(false);
+const validartarjeta = ref(true);
 
 const clientes = ref<Cliente[]>([]);
 const produtos = ref<Produto[]>([]);
@@ -893,6 +895,9 @@ function validarLimiteFormaSemTroco(indexEditado: number) {
         centavosParaValor(limiteCentavos),
       )}.`,
     });
+    validartarjeta.value = false;
+  } else {
+    validartarjeta.value = true;
   }
 }
 
